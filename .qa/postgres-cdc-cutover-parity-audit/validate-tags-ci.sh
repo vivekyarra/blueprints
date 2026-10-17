@@ -1,0 +1,117 @@
+#!/bin/bash
+set -e
+
+echo "🔍 Validating blueprint tags..."
+echo "Allowed tags: Data, Infrastructure, Business, Cloud, Core, AI, Getting Started, System"
+echo
+
+# Track files with issues
+INVALID_FILES=()
+OVER_LIMIT_FILES=()
+FAILED_PARSE=()
+NO_TAGS_FILES=()
+UNEXPECTED_FILES=()
+
+# Process each YAML file in flows directory
+while IFS= read -r -d '' file; do
+  echo "📄 Checking: $file"
+
+  # Extract tags section using Python for reliable YAML parsing
+  RESULT=$(python3 -c "
+import yaml
+import sys
+import os
+
+file_path = '$file'
+try:
+    with open(file_path, 'r') as f:
+        data = yaml.safe_load(f)
+
+    if 'extend' in data and 'tags' in data['extend']:
+        tags = data['extend']['tags']
+
+        # Check for invalid tags
+        allowed_tags = ['Data', 'Infrastructure', 'Business', 'Cloud', 'Core', 'AI', 'Getting Started', 'System']
+        invalid_tags = []
+        for tag in tags:
+            if tag not in allowed_tags:
+                invalid_tags.append(tag)
+
+        # Check for issues (report both if both exist)
+        issues = []
+        if invalid_tags:
+            issues.append(f'INVALID:{invalid_tags}')
+        if len(tags) > 3:
+            issues.append(f'OVER_LIMIT:{len(tags)}:{tags}')
+        if issues:
+            print('|'.join(issues))
+        else:
+            print('VALID')
+    else:
+        print('NO_TAGS')
+except Exception as e:
+    print(f'ERROR:{e}')
+")
+
+  # Process the result
+  if [[ $RESULT == *INVALID:* ]]; then
+    INVALID_FILES+=("$file")
+    echo "  ❌ Invalid tags: $RESULT"
+  fi
+  if [[ $RESULT == *OVER_LIMIT:* ]]; then
+    OVER_LIMIT_FILES+=("$file")
+    echo "  ❌ Too many tags: $RESULT"
+  fi
+  if [[ $RESULT == VALID ]]; then
+    echo "  valid"
+  elif [[ $RESULT == NO_TAGS ]]; then
+    NO_TAGS_FILES+=("$file")
+    echo "  FAIL missing extend/tags: $RESULT"
+  elif [[ $RESULT == ERROR:* ]]; then
+    FAILED_PARSE+=("$file")
+    echo "  FAIL validation error: $RESULT"
+  elif [[ $RESULT != *INVALID:* && $RESULT != *OVER_LIMIT:* ]]; then
+    UNEXPECTED_FILES+=("$file")
+    echo "  FAIL unexpected result: $RESULT"
+  fi
+
+done < <(find flows -name "*.yaml" -print0)
+
+echo
+
+# Check results
+if [ ${#INVALID_FILES[@]} -gt 0 ]; then
+  echo "❌ Found files with invalid tags:"
+  for file in "${INVALID_FILES[@]}"; do
+    echo "  - $file"
+  done
+  exit 1
+fi
+
+if [ ${#OVER_LIMIT_FILES[@]} -gt 0 ]; then
+  echo "❌ Found files with more than 3 tags:"
+  for file in "${OVER_LIMIT_FILES[@]}"; do
+    echo "  - $file"
+  done
+  exit 1
+fi
+
+if [ ${#FAILED_PARSE[@]} -gt 0 ]; then
+  echo "Found files that failed YAML parsing or validation:"
+  for file in "${FAILED_PARSE[@]}"; do echo "  - $file"; done
+  exit 1
+fi
+
+if [ ${#NO_TAGS_FILES[@]} -gt 0 ]; then
+  echo "Found files missing extend/tags:"
+  for file in "${NO_TAGS_FILES[@]}"; do echo "  - $file"; done
+  exit 1
+fi
+
+if [ ${#UNEXPECTED_FILES[@]} -gt 0 ]; then
+  echo "Found files with unexpected validator output:"
+  for file in "${UNEXPECTED_FILES[@]}"; do echo "  - $file"; done
+  exit 1
+fi
+
+echo "✅ All blueprint tags are valid!"

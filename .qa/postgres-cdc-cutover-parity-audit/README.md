@@ -80,6 +80,12 @@ Kestra outputs protocol, artifact capture and fail tasks.
 
 ## Limits
 
+The repository's exact `Validate Blueprint Tags` shell step also passed locally
+in Linux for all 1,961 blueprints. See `validate-tags-ci.sh` and
+`catalog-tags-ci.log`; `run-tags-ci.sh` installs the pinned YAML parser and runs
+that unchanged validator from the repository root. The GitHub workflow itself
+still needs maintainer authorization; a local run does not approve it.
+
 Independent PostgreSQL snapshots are not atomic. The operator must actually pause
 source writes and drain CDC; `cutover_ready` records acknowledgement and cannot
 prove either condition. Keep writes paused until cutover completes.
