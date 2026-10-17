@@ -1,0 +1,67 @@
+[
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "load_chunk",
+    "executionId": "BgAwrK8Fg76HI2slSJc0J",
+    "taskRunId": "3MisTozCgC3GMyIDqbQ33c",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:10.112879Z",
+    "level": "DEBUG",
+    "thread": "worker-default_65",
+    "message": "Starting prepared statement: INSERT INTO csv_snapshot.staging\n  (execution_id, order_id, customer_name, customer_email, product_id, price, quantity, total)\nVALUES ('1MO9FQITyPWiwazClJOdDm', CAST(CAST(? AS text) AS bigint), ?, ?,\n        CAST(CAST(? AS text) AS bigint), CAST(CAST(? AS text) AS numeric),\n        CAST(CAST(? AS text) AS integer), CAST(CAST(? AS text) AS numeric))\nON CONFLICT (execution_id, order_id) DO UPDATE SET\n  customer_name = EXCLUDED.customer_name, customer_email = EXCLUDED.customer_email,\n  product_id = EXCLUDED.product_id, price = EXCLUDED.price,\n  quantity = EXCLUDED.quantity, total = EXCLUDED.total\n",
+    "executionKind": "LOOP"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "load_chunk",
+    "executionId": "BgAwrK8Fg76HI2slSJc0J",
+    "taskRunId": "3MisTozCgC3GMyIDqbQ33c",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:10.114554Z",
+    "level": "DEBUG",
+    "thread": "worker-default_65",
+    "message": "AUTO input handling selected LOCAL mode for JDBC batch",
+    "executionKind": "LOOP"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "load_chunk",
+    "executionId": "BgAwrK8Fg76HI2slSJc0J",
+    "taskRunId": "3MisTozCgC3GMyIDqbQ33c",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:10.152530Z",
+    "level": "ERROR",
+    "thread": "worker-default_65",
+    "message": "Batch entry 2 INSERT INTO csv_snapshot.staging\n  (execution_id, order_id, customer_name, customer_email, product_id, price, quantity, total)\nVALUES ('1MO9FQITyPWiwazClJOdDm', CAST(CAST(('bad-id') AS text) AS bigint), ('X'), ('x@example.test'),\n        CAST(CAST(('5') AS text) AS bigint), CAST(CAST(('1') AS text) AS numeric),\n        CAST(CAST(('1') AS text) AS integer), CAST(CAST(('1') AS text) AS numeric))\nON CONFLICT (execution_id, order_id) DO UPDATE SET\n  customer_name = EXCLUDED.customer_name, customer_email = EXCLUDED.customer_email,\n  product_id = EXCLUDED.product_id, price = EXCLUDED.price,\n  quantity = EXCLUDED.quantity, total = EXCLUDED.total\n was aborted: ERROR: invalid input syntax for type bigint: \"bad-id\"  Call getNextException to see other errors in the batch.",
+    "executionKind": "LOOP"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "load_chunk",
+    "executionId": "BgAwrK8Fg76HI2slSJc0J",
+    "taskRunId": "3MisTozCgC3GMyIDqbQ33c",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:10.152530Z",
+    "level": "ERROR",
+    "thread": "worker-default_65",
+    "message": "ERROR: invalid input syntax for type bigint: \"bad-id\"",
+    "executionKind": "LOOP"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "load_chunk",
+    "executionId": "BgAwrK8Fg76HI2slSJc0J",
+    "taskRunId": "3MisTozCgC3GMyIDqbQ33c",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:10.152530Z",
+    "level": "DEBUG",
+    "thread": "worker-default_65",
+    "message": "java.sql.BatchUpdateException: Batch entry 2 INSERT INTO csv_snapshot.staging\n  (execution_id, order_id, customer_name, customer_email, product_id, price, quantity, total)\nVALUES ('1MO9FQITyPWiwazClJOdDm', CAST(CAST(('bad-id') AS text) AS bigint), ('X'), ('x@example.test'),\n        CAST(CAST(('5') AS text) AS bigint), CAST(CAST(('1') AS text) AS numeric),\n        CAST(CAST(('1') AS text) AS integer), CAST(CAST(('1') AS text) AS numeric))\nON CONFLICT (execution_id, order_id) DO UPDATE SET\n  customer_name = EXCLUDED.customer_name, customer_email = EXCLUDED.customer_email,\n  product_id = EXCLUDED.product_id, price = EXCLUDED.price,\n  quantity = EXCLUDED.quantity, total = EXCLUDED.total\n was aborted: ERROR: invalid input syntax for type bigint: \"bad-id\"  Call getNextException to see other errors in the batch.\n\tat org.******ql.jdbc.BatchResultHandler.handleError(BatchResultHandler.java:167)\n\tat org.******ql.core.ResultHandlerDelegate.handleError(ResultHandlerDelegate.java:52)\n\tat org.******ql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2657)\n\tat org.******ql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:702)\n\tat org.******ql.jdbc.PgStatement.internalExecuteBatch(PgStatement.java:940)\n\tat org.******ql.jdbc.PgStatement.executeBatch(PgStatement.java:964)\n\tat org.******ql.jdbc.PgPreparedStatement.executeBatch(PgPreparedStatement.java:1779)\n\tat com.zaxxer.hikari.pool.ProxyStatement.executeBatch(ProxyStatement.java:128)\n\tat com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeBatch(HikariProxyPreparedStatement.java)\n\tat io.kestra.plugin.jdbc.AbstractJdbcBatch$BatchExecutor.flush(AbstractJdbcBatch.java:606)\n\tat io.kestra.plugin.jdbc.AbstractJdbcBatch$BatchExecutor.executeAttempt(AbstractJdbcBatch.java:596)\n\tat io.kestra.plugin.jdbc.AbstractJdbcBatch$BatchExecutor.execute(AbstractJdbcBatch.java:567)\n\tat io.kestra.plugin.jdbc.AbstractJdbcBatch.lambda$run$1(AbstractJdbcBatch.java:208)\n\tat dev.failsafe.Functions.lambda$toCtxSupplier$11(Functions.java:243)\n\tat dev.failsafe.Functions.lambda$get$0(Functions.java:46)\n\tat dev.failsafe.internal.RetryPolicyExecutor.lambda$apply$0(RetryPolicyExecutor.java:74)\n\tat dev.failsafe.internal.FallbackExecutor.lambda$apply$0(FallbackExecutor.java:51)\n\tat dev.failsafe.SyncExecutionImpl.executeSync(SyncExecutionImpl.java:187)\n\tat dev.failsafe.FailsafeExecutor.call(FailsafeExecutor.java:376)\n\tat dev.failsafe.FailsafeExecutor.get(FailsafeExecutor.java:112)\n\tat io.kestra.core.utils.RetryUtils.wrap(RetryUtils.java:61)\n\tat io.kestra.core.utils.RetryUtils$Retryer.run(RetryUtils.java:250)\n\tat io.kestra.core.utils.RetryUtils$Instance.runRetryIf(RetryUtils.java:115)\n\tat io.kestra.plugin.jdbc.AbstractJdbcBatch.run(AbstractJdbcBatch.java:207)\n\tat io.kestra.plugin.jdbc.AbstractJdbcBatch.run(AbstractJdbcBatch.java:35)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.lambda$doCall$0(WorkerTaskCallable.java:63)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.callWithTimeout(AbstractWorkerCallable.java:170)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.doCall(WorkerTaskCallable.java:61)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.call(AbstractWorkerCallable.java:81)\n\tat io.kestra.worker.WorkerSecurityService.callInSecurityContext(WorkerSecurityService.java:12)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.lambda$callJob$0(AbstractWorkerJobProcessor.java:96)\n\tat io.kestra.core.trace.NoopTracer.inCurrentContext(NoopTracer.java:16)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.callJob(AbstractWorkerJobProcessor.java:90)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runAttempt(WorkerTaskProcessor.java:442)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:260)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:181)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:103)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:57)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.process(AbstractWorkerJobProcessor.java:66)\n\tat io.kestra.worker.WorkerJobExecutor$WorkerJobConsumer.lambda$doOnLoop$0(WorkerJobExecutor.java:319)\n\tat io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)\n\tat java.base/java.util.concurrent.FutureTask.run(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\nCaused by: org.******ql.util.PSQLException: ERROR: invalid input syntax for type bigint: \"bad-id\"\n\tat org.******ql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2993)\n\tat org.******ql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2656)\n\t... 43 more\n",
+    "executionKind": "LOOP"
+  }
+]

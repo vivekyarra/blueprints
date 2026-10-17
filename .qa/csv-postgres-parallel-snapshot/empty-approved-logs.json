@@ -1,0 +1,110 @@
+[
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "download_export",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "3SaYRyC9JHhKOBC0dXwOoF",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:26.661231Z",
+    "level": "DEBUG",
+    "thread": "worker-default_77",
+    "message": "Request 'http://csv-snapshot-files:8000/empty.csv' from 'csv-snapshot-files/172.25.0.8:8000' with the response code '200'"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "download_export",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "3SaYRyC9JHhKOBC0dXwOoF",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:26.708489Z",
+    "level": "DEBUG",
+    "thread": "worker-default_77",
+    "message": "File 'http://csv-snapshot-files:8000/empty.csv' downloaded with size '71'"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "5kfUBSlTGXamJjkc97ypGQ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:26.894531Z",
+    "level": "DEBUG",
+    "thread": "worker-default_79",
+    "message": "Starting query: CREATE SCHEMA IF NOT EXISTS csv_snapshot"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "5kfUBSlTGXamJjkc97ypGQ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:26.896043Z",
+    "level": "DEBUG",
+    "thread": "worker-default_79",
+    "message": "Starting query: CREATE TABLE IF NOT EXISTS csv_snapshot.orders (\n  order_id bigint PRIMARY KEY,\n  customer_name text NOT NULL,\n  customer_email text NOT NULL,\n  product_id bigint NOT NULL,\n  price numeric NOT NULL CHECK (price >= 0),\n  quantity integer NOT NULL CHECK (quantity > 0),\n  total numeric NOT NULL CHECK (total >= 0)\n)"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "5kfUBSlTGXamJjkc97ypGQ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:26.897718Z",
+    "level": "DEBUG",
+    "thread": "worker-default_79",
+    "message": "Starting query: CREATE TABLE IF NOT EXISTS csv_snapshot.staging (\n  execution_id text NOT NULL,\n  order_id bigint NOT NULL,\n  customer_name text NOT NULL,\n  customer_email text NOT NULL,\n  product_id bigint NOT NULL,\n  price numeric NOT NULL CHECK (price >= 0),\n  quantity integer NOT NULL CHECK (quantity > 0),\n  total numeric NOT NULL CHECK (total >= 0),\n  PRIMARY KEY (execution_id, order_id)\n)"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "5kfUBSlTGXamJjkc97ypGQ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:26.899457Z",
+    "level": "DEBUG",
+    "thread": "worker-default_79",
+    "message": "Starting query: CREATE TABLE IF NOT EXISTS csv_snapshot.publications (\n  execution_id text PRIMARY KEY,\n  expected_rows bigint NOT NULL,\n  staged_rows bigint NOT NULL,\n  allow_empty boolean NOT NULL,\n  published_at timestamptz NOT NULL DEFAULT now(),\n  CHECK (staged_rows = expected_rows),\n  CHECK (allow_empty OR staged_rows > 0)\n)"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "inspect_staging",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "6T941QCdkWMKIoNjn5azUJ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:27.129205Z",
+    "level": "DEBUG",
+    "thread": "worker-default_81",
+    "message": "Starting query: SELECT count(*) AS staged_rows\nFROM csv_snapshot.staging WHERE execution_id = '3C2yLDqX6ZHpGkghGhex4C';\n"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "publish_snapshot",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "3Tk9pdbF7wkCLe2ezyULqQ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:27.304587Z",
+    "level": "DEBUG",
+    "thread": "worker-default_83",
+    "message": "Starting query: BEGIN;\nSET LOCAL lock_timeout = '30s';\nSET LOCAL statement_timeout = '120s';\nLOCK TABLE csv_snapshot.orders IN EXCLUSIVE MODE;\nINSERT INTO csv_snapshot.publications\n  (execution_id, expected_rows, staged_rows, allow_empty)\nSELECT '3C2yLDqX6ZHpGkghGhex4C', 0, count(*), true\nFROM csv_snapshot.staging WHERE execution_id = '3C2yLDqX6ZHpGkghGhex4C'\nON CONFLICT (execution_id) DO UPDATE SET\n  expected_rows = EXCLUDED.expected_rows, staged_rows = EXCLUDED.staged_rows,\n  allow_empty = EXCLUDED.allow_empty, published_at = now();\nDELETE FROM csv_snapshot.orders;\nINSERT INTO csv_snapshot.orders\n  (order_id, customer_name, customer_email, product_id, price, quantity, total)\nSELECT order_id, customer_name, customer_email, product_id, price, quantity, total\nFROM csv_snapshot.staging WHERE execution_id = '3C2yLDqX6ZHpGkghGhex4C';\nCOMMIT;"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "verify_publication",
+    "executionId": "3C2yLDqX6ZHpGkghGhex4C",
+    "taskRunId": "5V1GO8FQUmRKEYKbDqlEf",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:27.435641Z",
+    "level": "DEBUG",
+    "thread": "worker-default_84",
+    "message": "Starting query: SELECT p.staged_rows AS published_rows,\n       (SELECT count(*) FROM csv_snapshot.orders) AS live_rows\nFROM csv_snapshot.publications p WHERE execution_id = '3C2yLDqX6ZHpGkghGhex4C';\n"
+  }
+]

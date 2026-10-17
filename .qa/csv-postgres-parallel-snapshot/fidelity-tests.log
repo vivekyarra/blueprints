@@ -1,0 +1,3 @@
+{"case": "payload-fidelity", "execution": "3hzFnTPUeLMrMy9BQGf7Hp", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 4}}
+{"case": "large-fidelity", "execution": "xFBO8a2zyOWFD8eIq9uT2", "state": "SUCCESS", "outputs": {"published_rows": 20003, "chunks": 5}}
+Full payload fidelity assertions passed

@@ -1,0 +1,106 @@
+[
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "download_export",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "78PRLDjHOQ8tgiJb4ZIgdA",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:13.735542Z",
+    "level": "DEBUG",
+    "thread": "worker-default_66",
+    "message": "Request 'http://csv-snapshot-files:8000/invalid-quantity.csv' from 'csv-snapshot-files/172.25.0.8:8000' with the response code '200'"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "download_export",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "78PRLDjHOQ8tgiJb4ZIgdA",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:13.746946Z",
+    "level": "DEBUG",
+    "thread": "worker-default_66",
+    "message": "File 'http://csv-snapshot-files:8000/invalid-quantity.csv' downloaded with size '103'"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "BZEAdPcmVmZ1nmrTVoEcw",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:13.986566Z",
+    "level": "DEBUG",
+    "thread": "worker-default_68",
+    "message": "Starting query: CREATE SCHEMA IF NOT EXISTS csv_snapshot"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "BZEAdPcmVmZ1nmrTVoEcw",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:13.988501Z",
+    "level": "DEBUG",
+    "thread": "worker-default_68",
+    "message": "Starting query: CREATE TABLE IF NOT EXISTS csv_snapshot.orders (\n  order_id bigint PRIMARY KEY,\n  customer_name text NOT NULL,\n  customer_email text NOT NULL,\n  product_id bigint NOT NULL,\n  price numeric NOT NULL CHECK (price >= 0),\n  quantity integer NOT NULL CHECK (quantity > 0),\n  total numeric NOT NULL CHECK (total >= 0)\n)"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "BZEAdPcmVmZ1nmrTVoEcw",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:13.990317Z",
+    "level": "DEBUG",
+    "thread": "worker-default_68",
+    "message": "Starting query: CREATE TABLE IF NOT EXISTS csv_snapshot.staging (\n  execution_id text NOT NULL,\n  order_id bigint NOT NULL,\n  customer_name text NOT NULL,\n  customer_email text NOT NULL,\n  product_id bigint NOT NULL,\n  price numeric NOT NULL CHECK (price >= 0),\n  quantity integer NOT NULL CHECK (quantity > 0),\n  total numeric NOT NULL CHECK (total >= 0),\n  PRIMARY KEY (execution_id, order_id)\n)"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "create_tables",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "BZEAdPcmVmZ1nmrTVoEcw",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T14:45:13.992348Z",
+    "level": "DEBUG",
+    "thread": "worker-default_68",
+    "message": "Starting query: CREATE TABLE IF NOT EXISTS csv_snapshot.publications (\n  execution_id text PRIMARY KEY,\n  expected_rows bigint NOT NULL,\n  staged_rows bigint NOT NULL,\n  allow_empty boolean NOT NULL,\n  published_at timestamptz NOT NULL DEFAULT now(),\n  CHECK (staged_rows = expected_rows),\n  CHECK (allow_empty OR staged_rows > 0)\n)"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "taskId": "stage_chunks",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "taskRunId": "4KSuIFjpB8CVRUN0h07YGV",
+    "attemptNumber": 1,
+    "timestamp": "2026-10-17T14:45:14.441609Z",
+    "level": "ERROR",
+    "thread": "queue-h2_14",
+    "message": "Loop iteration 0 ended in FAILED in sub-execution [[link execution=\"76eJW50Wt2C0PSBDeYVmxO\" flowId=\"csv-postgres-parallel-snapshot\" namespace=\"company.data\"]], check that execution's logs for details"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "attemptNumber": null,
+    "timestamp": "2026-10-17T14:45:14.497293Z",
+    "level": "ERROR",
+    "thread": "executor-execution-event-executor_13",
+    "message": "Failed to render output values: Unable to find `verify_publication` used in the expression `{{ outputs.verify_publication.row.published_rows }}` at line 1"
+  },
+  {
+    "namespace": "company.data",
+    "flowId": "csv-postgres-parallel-snapshot",
+    "executionId": "3KBNcw0RsHp2seNJxD2tYN",
+    "attemptNumber": null,
+    "timestamp": "2026-10-17T14:45:14.497293Z",
+    "level": "DEBUG",
+    "thread": "executor-execution-event-executor_13",
+    "message": "io.kestra.core.exceptions.IllegalVariableEvaluationException: Unable to find `verify_publication` used in the expression `{{ outputs.verify_publication.row.published_rows }}` at line 1\n\tat io.kestra.core.runners.VariableRenderer.properPebbleException(VariableRenderer.java:49)\n\tat io.kestra.core.runners.VariableRenderer.renderOnce(VariableRenderer.java:130)\n\tat io.kestra.core.runners.VariableRenderer.render(VariableRenderer.java:84)\n\tat io.kestra.core.runners.VariableRenderer.renderObject(VariableRenderer.java:217)\n\tat io.kestra.core.runners.VariableRenderer.render(VariableRenderer.java:193)\n\tat io.kestra.core.runners.VariableRenderer.render(VariableRenderer.java:185)\n\tat io.kestra.core.runners.DefaultRunContext.render(DefaultRunContext.java:358)\n\tat io.kestra.core.runners.InputAndOutputImpl.renderOutputs(InputAndOutputImpl.java:48)\n\tat io.kestra.executor.ExecutorService.onEnd(ExecutorService.java:476)\n\tat io.kestra.executor.ExecutorService.handleEnd(ExecutorService.java:1187)\n\tat io.kestra.executor.ExecutorService.process(ExecutorService.java:183)\n\tat io.kestra.executor.handler.ExecutionEventMessageHandler.lambda$handle$1(ExecutionEventMessageHandler.java:264)\n\tat io.kestra.core.trace.NoopTracer.inCurrentContext(NoopTracer.java:21)\n\tat io.kestra.executor.handler.ExecutionEventMessageHandler.lambda$handle$0(ExecutionEventMessageHandler.java:128)\n\tat io.kestra.jdbc.repository.AbstractJdbcExecutionRepository.lambda$lock$0(AbstractJdbcExecutionRepository.java:499)\n\tat org.jooq.impl.DefaultDSLContext.lambda$transactionResult0$3(DefaultDSLContext.java:565)\n\tat org.jooq.impl.Tools$3$1.block(Tools.java:6543)\n\tat java.base/java.util.concurrent.ForkJoinPool.unmanagedBlock(Unknown Source)\n\tat java.base/java.util.concurrent.ForkJoinPool.managedBlock(Unknown Source)\n\tat org.jooq.impl.Tools$3.get(Tools.java:6540)\n\tat org.jooq.impl.DefaultDSLContext.transactionResult0(DefaultDSLContext.java:613)\n\tat org.jooq.impl.DefaultDSLContext.transactionResult(DefaultDSLContext.java:522)\n\tat io.kestra.jdbc.JooqDSLContextWrapper.lambda$transactionResult$0(JooqDSLContextWrapper.java:81)\n\tat dev.failsafe.Functions.lambda$toCtxSupplier$11(Functions.java:243)\n\tat dev.failsafe.Functions.lambda$get$0(Functions.java:46)\n\tat dev.failsafe.internal.RetryPolicyExecutor.lambda$apply$0(RetryPolicyExecutor.java:74)\n\tat dev.failsafe.internal.FallbackExecutor.lambda$apply$0(FallbackExecutor.java:51)\n\tat dev.failsafe.SyncExecutionImpl.executeSync(SyncExecutionImpl.java:187)\n\tat dev.failsafe.FailsafeExecutor.call(FailsafeExecutor.java:376)\n\tat dev.failsafe.FailsafeExecutor.get(FailsafeExecutor.java:112)\n\tat io.kestra.core.utils.RetryUtils.wrap(RetryUtils.java:61)\n\tat io.kestra.core.utils.RetryUtils$Retryer.run(RetryUtils.java:250)\n\tat io.kestra.jdbc.JooqDSLContextWrapper.transactionResult(JooqDSLContextWrapper.java:80)\n\tat io.kestra.jdbc.repository.AbstractJdbcExecutionRepository.lock(AbstractJdbcExecutionRepository.java:481)\n\tat io.kestra.executor.handler.ExecutionEventMessageHandler.handle(ExecutionEventMessageHandler.java:127)\n\tat io.kestra.executor.ExecutorCore.onExecutionEvent(ExecutorCore.java:213)\n\tat io.kestra.executor.DefaultExecutor.executionEventQueue(DefaultExecutor.java:330)\n\tat java.base/java.util.ArrayList.forEach(Unknown Source)\n\tat io.kestra.executor.DefaultExecutor.lambda$doRun$3(DefaultExecutor.java:186)\n\tat java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(Unknown Source)\n\tat io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n"
+  }
+]

@@ -1,0 +1,15 @@
+{"case": "quoted-multiline", "execution": "5tyow4DyoUfg3uwU4gb1fg", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 4}}
+{"case": "repeat-same-source", "execution": "2mwyyfgWkOzYIImFrGbSao", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 4}}
+{"case": "publish-rollback", "execution": "6nSNmZ4PlywzwlIgrBm7uj", "state": "FAILED", "outputs": null}
+{"case": "duplicate-keys", "execution": "3mudF18irYzBbVTdvWcK2P", "state": "FAILED", "outputs": null}
+{"case": "invalid-number", "execution": "1MO9FQITyPWiwazClJOdDm", "state": "FAILED", "outputs": null}
+{"case": "negative-quantity", "execution": "3KBNcw0RsHp2seNJxD2tYN", "state": "FAILED", "outputs": null}
+{"case": "empty-blocked", "execution": "6dIo9Jr6drk4RnfhMEJzov", "state": "FAILED", "outputs": null}
+{"case": "empty-approved", "execution": "3C2yLDqX6ZHpGkghGhex4C", "state": "SUCCESS", "outputs": {"published_rows": 0, "chunks": 0}}
+{"case": "restore-snapshot", "execution": "5f2GX2g2SZt1V9wDymvote", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 6}}
+{"case": "large-bounded-load", "execution": "4B1uYyjnBZze3e1AwsmXFi", "state": "SUCCESS", "outputs": {"published_rows": 20003, "chunks": 5}}
+{"case": "public-sample", "execution": "2LvUhVeVw2FXDcJZM3nQAd", "state": "SUCCESS", "outputs": {"published_rows": 100, "chunks": 5}}
+{"case": "payload-fidelity", "execution": "3hzFnTPUeLMrMy9BQGf7Hp", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 4}}
+{"case": "large-fidelity", "execution": "xFBO8a2zyOWFD8eIq9uT2", "state": "SUCCESS", "outputs": {"published_rows": 20003, "chunks": 5}}
+{"case": "reader-baseline", "execution": "1Cscxl1hnCdBzqmNmHgupq", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 4}}
+{"case": "reader-publication", "execution": "562fkLDA7rSNTKWVOyplc", "state": "SUCCESS", "outputs": {"published_rows": 20003, "chunks": 5}}

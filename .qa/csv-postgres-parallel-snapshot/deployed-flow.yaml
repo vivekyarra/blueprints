@@ -1,0 +1,151 @@
+id: csv-postgres-parallel-snapshot
+namespace: company.data
+description: Parse a CSV export, load bounded ION chunks in parallel, and publish
+  a complete PostgreSQL snapshot in one transaction.
+concurrency:
+  limit: 1
+  behavior: QUEUE
+inputs:
+- id: source_url
+  type: STRING
+  defaults: https://huggingface.co/datasets/kestra/datasets/raw/main/csv/orders.csv
+  description: URL of an immutable CSV export with the seven documented order columns.
+- id: rows_per_chunk
+  type: INT
+  defaults: 5000
+  min: 1
+  max: 50000
+- id: allow_empty
+  type: BOOL
+  defaults: false
+  description: Allow a header-only export to clear the destination. False protects
+    the last good snapshot.
+tasks:
+- id: download_export
+  type: io.kestra.plugin.core.http.Download
+  uri: '{{ inputs.source_url }}'
+- id: parse_csv
+  type: io.kestra.plugin.serdes.csv.CsvToIon
+  description: Parse CSV records before splitting, so quoted commas and newlines remain
+    in one record.
+  from: '{{ outputs.download_export.uri }}'
+  header: true
+  onBadLines: ERROR
+  skipEmptyRows: true
+- id: create_tables
+  type: io.kestra.plugin.jdbc.postgresql.Queries
+  url: '{{ secret(''SNAPSHOT_JDBC_URL'') }}'
+  username: '{{ secret(''SNAPSHOT_USER'') }}'
+  password: '{{ secret(''SNAPSHOT_PASSWORD'') }}'
+  sql: "CREATE SCHEMA IF NOT EXISTS csv_snapshot;\nCREATE TABLE IF NOT EXISTS csv_snapshot.orders\
+    \ (\n  order_id bigint PRIMARY KEY,\n  customer_name text NOT NULL,\n  customer_email\
+    \ text NOT NULL,\n  product_id bigint NOT NULL,\n  price numeric NOT NULL CHECK\
+    \ (price >= 0),\n  quantity integer NOT NULL CHECK (quantity > 0),\n  total numeric\
+    \ NOT NULL CHECK (total >= 0)\n);\nCREATE TABLE IF NOT EXISTS csv_snapshot.staging\
+    \ (\n  execution_id text NOT NULL,\n  order_id bigint NOT NULL,\n  customer_name\
+    \ text NOT NULL,\n  customer_email text NOT NULL,\n  product_id bigint NOT NULL,\n\
+    \  price numeric NOT NULL CHECK (price >= 0),\n  quantity integer NOT NULL CHECK\
+    \ (quantity > 0),\n  total numeric NOT NULL CHECK (total >= 0),\n  PRIMARY KEY\
+    \ (execution_id, order_id)\n);\nCREATE TABLE IF NOT EXISTS csv_snapshot.publications\
+    \ (\n  execution_id text PRIMARY KEY,\n  expected_rows bigint NOT NULL,\n  staged_rows\
+    \ bigint NOT NULL,\n  allow_empty boolean NOT NULL,\n  published_at timestamptz\
+    \ NOT NULL DEFAULT now(),\n  CHECK (staged_rows = expected_rows),\n  CHECK (allow_empty\
+    \ OR staged_rows > 0)\n);\n"
+- id: split_records
+  type: io.kestra.plugin.core.storage.Split
+  description: Split binary ION by record count, rather than by CSV physical lines.
+  from: '{{ outputs.parse_csv.uri }}'
+  rows: '{{ inputs.rows_per_chunk }}'
+- id: stage_chunks
+  type: io.kestra.plugin.core.flow.Loop
+  description: Load at most three chunks at once. A repeated chunk replaces the same
+    staging keys.
+  values: '{{ outputs.split_records.uris }}'
+  concurrencyLimit: 3
+  tasks:
+  - id: load_chunk
+    type: io.kestra.plugin.jdbc.postgresql.Batch
+    url: '{{ secret(''SNAPSHOT_JDBC_URL'') }}'
+    username: '{{ secret(''SNAPSHOT_USER'') }}'
+    password: '{{ secret(''SNAPSHOT_PASSWORD'') }}'
+    from: '{{ item.value }}'
+    sql: "INSERT INTO csv_snapshot.staging\n  (execution_id, order_id, customer_name,\
+      \ customer_email, product_id, price, quantity, total)\nVALUES ('{{ execution.id\
+      \ }}', CAST(CAST(? AS text) AS bigint), ?, ?,\n        CAST(CAST(? AS text)\
+      \ AS bigint), CAST(CAST(? AS text) AS numeric),\n        CAST(CAST(? AS text)\
+      \ AS integer), CAST(CAST(? AS text) AS numeric))\nON CONFLICT (execution_id,\
+      \ order_id) DO UPDATE SET\n  customer_name = EXCLUDED.customer_name, customer_email\
+      \ = EXCLUDED.customer_email,\n  product_id = EXCLUDED.product_id, price = EXCLUDED.price,\n\
+      \  quantity = EXCLUDED.quantity, total = EXCLUDED.total\n"
+    columns:
+    - order_id
+    - customer_name
+    - customer_email
+    - product_id
+    - price
+    - quantity
+    - total
+- id: inspect_staging
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  description: A duplicate order ID reduces the staging count; it must not reach the
+    live table.
+  url: '{{ secret(''SNAPSHOT_JDBC_URL'') }}'
+  username: '{{ secret(''SNAPSHOT_USER'') }}'
+  password: '{{ secret(''SNAPSHOT_PASSWORD'') }}'
+  fetchType: FETCH_ONE
+  sql: 'SELECT count(*) AS staged_rows
+
+    FROM csv_snapshot.staging WHERE execution_id = ''{{ execution.id }}'';
+
+    '
+- id: validate_snapshot
+  type: io.kestra.plugin.core.execution.Assert
+  conditions:
+  - '{{ outputs.inspect_staging.row.staged_rows == outputs.parse_csv.size }}'
+  - '{{ inputs.allow_empty or outputs.parse_csv.size > 0 }}'
+  errorMessage: The snapshot is empty or contains duplicate order IDs. The last published
+    snapshot is unchanged.
+- id: publish_snapshot
+  type: io.kestra.plugin.jdbc.postgresql.Queries
+  description: Validate again under a database lock, then replace all live rows in
+    the same transaction.
+  url: '{{ secret(''SNAPSHOT_JDBC_URL'') }}'
+  username: '{{ secret(''SNAPSHOT_USER'') }}'
+  password: '{{ secret(''SNAPSHOT_PASSWORD'') }}'
+  sql: "BEGIN;\nSET LOCAL lock_timeout = '30s';\nSET LOCAL statement_timeout = '120s';\n\
+    LOCK TABLE csv_snapshot.orders IN EXCLUSIVE MODE;\nINSERT INTO csv_snapshot.publications\n\
+    \  (execution_id, expected_rows, staged_rows, allow_empty)\nSELECT '{{ execution.id\
+    \ }}', {{ outputs.parse_csv.size }}, count(*), {{ inputs.allow_empty }}\nFROM\
+    \ csv_snapshot.staging WHERE execution_id = '{{ execution.id }}'\nON CONFLICT\
+    \ (execution_id) DO UPDATE SET\n  expected_rows = EXCLUDED.expected_rows, staged_rows\
+    \ = EXCLUDED.staged_rows,\n  allow_empty = EXCLUDED.allow_empty, published_at\
+    \ = now();\nDELETE FROM csv_snapshot.orders;\nINSERT INTO csv_snapshot.orders\n\
+    \  (order_id, customer_name, customer_email, product_id, price, quantity, total)\n\
+    SELECT order_id, customer_name, customer_email, product_id, price, quantity, total\n\
+    FROM csv_snapshot.staging WHERE execution_id = '{{ execution.id }}';\nCOMMIT;\n"
+- id: verify_publication
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  url: '{{ secret(''SNAPSHOT_JDBC_URL'') }}'
+  username: '{{ secret(''SNAPSHOT_USER'') }}'
+  password: '{{ secret(''SNAPSHOT_PASSWORD'') }}'
+  fetchType: FETCH_ONE
+  sql: "SELECT p.staged_rows AS published_rows,\n       (SELECT count(*) FROM csv_snapshot.orders)\
+    \ AS live_rows\nFROM csv_snapshot.publications p WHERE execution_id = '{{ execution.id\
+    \ }}';\n"
+- id: require_complete_publication
+  type: io.kestra.plugin.core.execution.Assert
+  conditions:
+  - '{{ outputs.verify_publication.row.published_rows == outputs.parse_csv.size }}'
+  - '{{ outputs.verify_publication.row.live_rows == outputs.parse_csv.size }}'
+triggers:
+- id: daily_snapshot
+  type: io.kestra.plugin.core.trigger.Schedule
+  cron: 0 3 * * *
+  disabled: true
+outputs:
+- id: published_rows
+  type: INT
+  value: '{{ outputs.verify_publication.row.published_rows }}'
+- id: chunks
+  type: INT
+  value: '{{ outputs.split_records.uris | length }}'

@@ -1,0 +1,3 @@
+{"case": "reader-baseline", "execution": "1Cscxl1hnCdBzqmNmHgupq", "state": "SUCCESS", "outputs": {"published_rows": 11, "chunks": 4}}
+{"case": "reader-publication", "execution": "562fkLDA7rSNTKWVOyplc", "state": "SUCCESS", "outputs": {"published_rows": 20003, "chunks": 5}}
+Concurrent reader observed only complete snapshots: 14 samples
