@@ -1,0 +1,25 @@
+{"case": "copy-and-cutover", "execution": "3hCBjUL6TjBn1JU5oEwzAq", "state": "SUCCESS", "outputs": {"copied_documents": 200, "new_index": "qa-search-927c859c65-live-kestra-3hcbjul6tjbn1ju5oewzaq", "old_index": "qa-search-927c859c65-v1"}}
+{"case": "source-not-frozen", "execution": "5Zhd5I00iAREAJc6LQ5GuR", "state": "FAILED", "outputs": null}
+{"case": "empty-source", "execution": "1F6RxYK21BtKGYQGNEtnSC", "state": "FAILED", "outputs": null}
+{"case": "filtered-alias", "execution": "7FFQ9mAKW37RAoIaBjPK6i", "state": "FAILED", "outputs": null}
+{"case": "multiple-targets", "execution": "5UkdItEX8PBByRs87VlRS5", "state": "FAILED", "outputs": null}
+{"case": "canary-no-matches", "execution": "5sJDTf8zhk8TdRI9eDbOLp", "state": "FAILED", "outputs": null}
+{"case": "canary-too-few", "execution": "EKh0D3VPFyPGyTlbvsfuv", "state": "FAILED", "outputs": null}
+{"case": "incompatible-mapping", "execution": "6W7Gh9qWMLISleAjUDZlqi", "state": "FAILED", "outputs": null}
+{"case": "large-mapping-migration", "execution": "3Lk4dtHwWIN3D3v5J4ynO5", "state": "SUCCESS", "outputs": {"copied_documents": 10003, "new_index": "qa-search-fe2dbc7f8c-live-kestra-3lk4dthwwin3d3v5j4yno5", "old_index": "qa-search-fe2dbc7f8c-v1"}}
+{"case": "reject-index-selector", "execution": "5Y6pdy3TlpfRG5M0J5cw3e", "state": "FAILED", "outputs": null}
+{"case": "reject-alias-path", "execution": "5bLpU1wajzOaCnfbE3ZdLV", "state": "FAILED", "outputs": null}
+{"case": "alias-changed-during-copy", "execution": "3klI1exlrW2YXtHJTzstYB", "state": "FAILED", "outputs": null}
+{"case": "copy-and-cutover", "execution": "wcP82lWeaYhs31g9DttvO", "state": "SUCCESS", "outputs": {"copied_documents": 200, "new_index": "qa-search-f68ffa0479-live-kestra-wcp82lweayhs31g9dttvo", "old_index": "qa-search-f68ffa0479-v1"}}
+{"case": "source-not-frozen", "execution": "1WVTbhagfhtFX5l4F44ZEC", "state": "FAILED", "outputs": null}
+{"case": "empty-source", "execution": "7dNiQDccrqMRCvGd93ASe3", "state": "FAILED", "outputs": null}
+{"case": "filtered-alias", "execution": "1C4rTg72bRs2RpJYoXO9Bg", "state": "FAILED", "outputs": null}
+{"case": "multiple-targets", "execution": "4U1QFsUOMqPDntG4Rroh1j", "state": "FAILED", "outputs": null}
+{"case": "canary-no-matches", "execution": "51lkZ7gxFdfU02hiTWcwXI", "state": "FAILED", "outputs": null}
+{"case": "canary-too-few", "execution": "7eiLdykZQCIg1sfwjGOWBW", "state": "FAILED", "outputs": null}
+{"case": "incompatible-mapping", "execution": "24KPvhlC54ZGj6tuAVEBxe", "state": "FAILED", "outputs": null}
+{"case": "large-mapping-migration", "execution": "5QpnspsT8owLV5Mr3sEBI5", "state": "SUCCESS", "outputs": {"copied_documents": 10003, "new_index": "qa-search-4b03fc1d93-live-kestra-5qpnspst8owlv5mr3sebi5", "old_index": "qa-search-4b03fc1d93-v1"}}
+{"case": "reject-index-selector", "execution": "1MwO1rY682l9pAisXXaONb", "state": "FAILED", "outputs": null}
+{"case": "reject-alias-path", "execution": "4aNjlfdndxe5xW8vUFCMAu", "state": "FAILED", "outputs": null}
+{"case": "reject-index-selector", "execution": "3oG7qcVXcrsKJCtASwdxWQ", "state": "FAILED", "outputs": null}
+{"case": "reject-alias-path", "execution": "2G68yEWzTpWJPUIx899fmm", "state": "FAILED", "outputs": null}

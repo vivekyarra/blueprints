@@ -1,0 +1,14 @@
+{
+  "response": [
+    {
+      "acknowledged": true
+    }
+  ],
+  "final_alias": {
+    "qa-search-9a8bc9b434-v1-foreign": {
+      "aliases": {
+        "qa-search-9a8bc9b434-live": {}
+      }
+    }
+  }
+}

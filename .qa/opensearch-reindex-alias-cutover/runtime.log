@@ -1,0 +1,12 @@
+Flow accepted by Kestra
+{"case": "copy-and-cutover", "execution": "wcP82lWeaYhs31g9DttvO", "state": "SUCCESS", "outputs": {"copied_documents": 200, "new_index": "qa-search-f68ffa0479-live-kestra-wcp82lweayhs31g9dttvo", "old_index": "qa-search-f68ffa0479-v1"}}
+Verified full document equality, write blocking and rollback
+{"case": "source-not-frozen", "execution": "1WVTbhagfhtFX5l4F44ZEC", "state": "FAILED", "outputs": null}
+{"case": "empty-source", "execution": "7dNiQDccrqMRCvGd93ASe3", "state": "FAILED", "outputs": null}
+{"case": "filtered-alias", "execution": "1C4rTg72bRs2RpJYoXO9Bg", "state": "FAILED", "outputs": null}
+{"case": "multiple-targets", "execution": "4U1QFsUOMqPDntG4Rroh1j", "state": "FAILED", "outputs": null}
+{"case": "canary-no-matches", "execution": "51lkZ7gxFdfU02hiTWcwXI", "state": "FAILED", "outputs": null}
+{"case": "canary-too-few", "execution": "7eiLdykZQCIg1sfwjGOWBW", "state": "FAILED", "outputs": null}
+{"case": "incompatible-mapping", "execution": "24KPvhlC54ZGj6tuAVEBxe", "state": "FAILED", "outputs": null}
+{"case": "large-mapping-migration", "execution": "5QpnspsT8owLV5Mr3sEBI5", "state": "SUCCESS", "outputs": {"copied_documents": 10003, "new_index": "qa-search-4b03fc1d93-live-kestra-5qpnspst8owlv5mr3sebi5", "old_index": "qa-search-4b03fc1d93-v1"}}
+All OpenSearch runtime assertions passed

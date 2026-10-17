@@ -1,0 +1,7 @@
+🔍 Validating blueprint tags...
+Allowed tags: Data, Infrastructure, Business, Cloud, Core, AI, Getting Started, System
+
+📄 Checking: flows/opensearch-reindex-alias-cutover.yaml
+  valid
+
+✅ All blueprint tags are valid!

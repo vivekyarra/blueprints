@@ -1,0 +1,235 @@
+{
+  "tenantId": "main",
+  "id": "1WVTbhagfhtFX5l4F44ZEC",
+  "namespace": "company.search",
+  "flowId": "opensearch-reindex-alias-cutover",
+  "flowRevision": 2,
+  "taskRunList": [
+    {
+      "id": "5dkTGGJ6sipTTL4eg6OAsj",
+      "taskId": "validate_names",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T15:15:04.522453Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T15:15:04.522455Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T15:15:04.523961Z"
+              }
+            ],
+            "duration": "PT0.001508S",
+            "startDate": "2026-10-17T15:15:04.522453Z",
+            "endDate": "2026-10-17T15:15:04.523961Z"
+          },
+          "workerId": "4UGXVLXIL5iD9GpZ5Cyv5j"
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T15:15:04.342951Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T15:15:04.344914Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T15:15:04.521907Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T15:15:04.524110Z"
+          }
+        ],
+        "duration": "PT0.181159S",
+        "startDate": "2026-10-17T15:15:04.342951Z",
+        "endDate": "2026-10-17T15:15:04.524110Z"
+      }
+    },
+    {
+      "id": "5O3dVqo5Llg4wo7xAXPhkh",
+      "taskId": "source_settings",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T15:15:04.600863Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T15:15:04.600866Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T15:15:04.637899Z"
+              }
+            ],
+            "duration": "PT0.037036S",
+            "startDate": "2026-10-17T15:15:04.600863Z",
+            "endDate": "2026-10-17T15:15:04.637899Z"
+          },
+          "workerId": "4UGXVLXIL5iD9GpZ5Cyv5j"
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T15:15:04.577408Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T15:15:04.578675Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T15:15:04.600361Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T15:15:04.638217Z"
+          }
+        ],
+        "duration": "PT0.060809S",
+        "startDate": "2026-10-17T15:15:04.577408Z",
+        "endDate": "2026-10-17T15:15:04.638217Z"
+      }
+    },
+    {
+      "id": "2x0Jb2IVhfiot1k3IBtfRq",
+      "taskId": "require_frozen_source",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T15:15:04.718292Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T15:15:04.718295Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T15:15:04.720516Z"
+              }
+            ],
+            "duration": "PT0.002224S",
+            "startDate": "2026-10-17T15:15:04.718292Z",
+            "endDate": "2026-10-17T15:15:04.720516Z"
+          },
+          "workerId": "4UGXVLXIL5iD9GpZ5Cyv5j"
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T15:15:04.673193Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T15:15:04.675495Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T15:15:04.717862Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T15:15:04.720630Z"
+          }
+        ],
+        "duration": "PT0.047437S",
+        "startDate": "2026-10-17T15:15:04.673193Z",
+        "endDate": "2026-10-17T15:15:04.720630Z"
+      }
+    }
+  ],
+  "inputs": {
+    "mappings": {
+      "dynamic": "strict",
+      "properties": {
+        "sku": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "english"
+        },
+        "price": {
+          "type": "double"
+        }
+      }
+    },
+    "canary_min_hits": 1,
+    "replicas": 0,
+    "canary_query": {
+      "match": {
+        "title": "wireless"
+      }
+    },
+    "source_index": "qa-search-9176a504f5-v1",
+    "read_alias": "qa-search-9176a504f5-live"
+  },
+  "labels": [
+    {
+      "key": "system.from",
+      "value": "api"
+    },
+    {
+      "key": "system.correlationId",
+      "value": "1WVTbhagfhtFX5l4F44ZEC"
+    }
+  ],
+  "variables": {
+    "candidate": "{{ inputs.read_alias }}-kestra-{{ execution.id | lower }}"
+  },
+  "state": {
+    "current": "FAILED",
+    "histories": [
+      {
+        "state": "CREATED",
+        "date": "2026-10-17T15:15:04.339086Z"
+      },
+      {
+        "state": "RUNNING",
+        "date": "2026-10-17T15:15:04.344816Z"
+      },
+      {
+        "state": "FAILED",
+        "date": "2026-10-17T15:15:04.768705Z"
+      }
+    ],
+    "duration": "PT0.429619S",
+    "startDate": "2026-10-17T15:15:04.339086Z",
+    "endDate": "2026-10-17T15:15:04.768705Z"
+  },
+  "originalId": "1WVTbhagfhtFX5l4F44ZEC",
+  "metadata": {
+    "attemptNumber": 1,
+    "originalCreatedDate": "2026-10-17T15:15:04.339094Z",
+    "concurrencyScopes": [
+      "main|company.search|opensearch-reindex-alias-cutover"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "error": {
+    "error": {
+      "root_cause": [
+        {
+          "type": "aliases_not_found_exception",
+          "reason": "aliases [qa-search-9a8bc9b434-live] missing",
+          "resource.id": "qa-search-9a8bc9b434-live",
+          "resource.type": "aliases"
+        }
+      ],
+      "type": "aliases_not_found_exception",
+      "reason": "aliases [qa-search-9a8bc9b434-live] missing",
+      "resource.id": "qa-search-9a8bc9b434-live",
+      "resource.type": "aliases"
+    },
+    "status": 404
+  },
+  "alias_unchanged": true
+}

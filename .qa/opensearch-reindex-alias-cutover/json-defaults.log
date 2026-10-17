@@ -1,0 +1,22 @@
+[
+  {
+    "execution": "3hCBjUL6TjBn1JU5oEwzAq",
+    "input": "mappings",
+    "resolved_as_object": true
+  },
+  {
+    "execution": "3hCBjUL6TjBn1JU5oEwzAq",
+    "input": "canary_query",
+    "resolved_as_object": true
+  },
+  {
+    "execution": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "input": "mappings",
+    "resolved_as_object": true
+  },
+  {
+    "execution": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "input": "canary_query",
+    "resolved_as_object": true
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "source_settings",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "2f7kB3Tvpy0bXq2Uz1ld55",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.551566Z",
+    "level": "DEBUG",
+    "thread": "worker-default_134",
+    "message": "Starting request: Request{method='GET', endpoint='catalog-v1/_settings', params={flat_settings=true}, options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "read_alias",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "2XXb1DnSAWcl1sHhNdijYN",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.658216Z",
+    "level": "DEBUG",
+    "thread": "worker-default_136",
+    "message": "Starting request: Request{method='GET', endpoint='_alias/catalog', options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "refresh_source",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "5rhfkYFDJKgtqZbZcCr6lj",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.790117Z",
+    "level": "DEBUG",
+    "thread": "worker-default_138",
+    "message": "Starting request: Request{method='POST', endpoint='catalog-v1/_refresh', options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "count_source",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "3EI3ZDZrPHkEf83NnASONS",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.842638Z",
+    "level": "DEBUG",
+    "thread": "worker-default_139",
+    "message": "Starting request: Request{method='GET', endpoint='catalog-v1/_count', options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "create_candidate",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "4RQ1jifLAr9f0YSddko5yi",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.950710Z",
+    "level": "DEBUG",
+    "thread": "worker-default_141",
+    "message": "Starting request: Request{method='PUT', endpoint='catalog-kestra-2aj7p0n7qfohoobq8ujdq8', entity=[Entity-Class: StringEntity, Content-Type: application/json; charset=UTF-8, Content-Encoding: null, chunked: false], options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "create_candidate",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "4RQ1jifLAr9f0YSddko5yi",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.981276Z",
+    "level": "ERROR",
+    "thread": "worker-default_141",
+    "message": "method [PUT], host [******], URI [catalog-kestra-2aj7p0n7qfohoobq8ujdq8], status line [HTTP/1.1 500 Internal Server Error]\n{\"error\":{\"root_cause\":[{\"type\":\"class_cast_exception\",\"reason\":\"class java.lang.String cannot be cast to class java.util.Map (java.lang.String and java.util.Map are in module java.base of loader 'bootstrap')\"}],\"type\":\"class_cast_exception\",\"reason\":\"class java.lang.String cannot be cast to class java.util.Map (java.lang.String and java.util.Map are in module java.base of loader 'bootstrap')\"},\"status\":500}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "create_candidate",
+    "executionId": "2AJ7p0n7qfOhOObq8UJdQ8",
+    "taskRunId": "4RQ1jifLAr9f0YSddko5yi",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:11:47.981276Z",
+    "level": "DEBUG",
+    "thread": "worker-default_141",
+    "message": "org.opensearch.client.ResponseException: method [PUT], host [******], URI [catalog-kestra-2aj7p0n7qfohoobq8ujdq8], status line [HTTP/1.1 500 Internal Server Error]\n{\"error\":{\"root_cause\":[{\"type\":\"class_cast_exception\",\"reason\":\"class java.lang.String cannot be cast to class java.util.Map (java.lang.String and java.util.Map are in module java.base of loader 'bootstrap')\"}],\"type\":\"class_cast_exception\",\"reason\":\"class java.lang.String cannot be cast to class java.util.Map (java.lang.String and java.util.Map are in module java.base of loader 'bootstrap')\"},\"status\":500}\n\tat org.opensearch.client.RestClient.convertResponse(RestClient.java:494)\n\tat org.opensearch.client.RestClient.performRequest(RestClient.java:383)\n\tat org.opensearch.client.RestClient.performRequest(RestClient.java:358)\n\tat io.kestra.plugin.opensearch.Request.run(Request.java:148)\n\tat io.kestra.plugin.opensearch.Request.run(Request.java:27)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.lambda$doCall$0(WorkerTaskCallable.java:63)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.callWithTimeout(AbstractWorkerCallable.java:170)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.doCall(WorkerTaskCallable.java:61)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.call(AbstractWorkerCallable.java:81)\n\tat io.kestra.worker.WorkerSecurityService.callInSecurityContext(WorkerSecurityService.java:12)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.lambda$callJob$0(AbstractWorkerJobProcessor.java:96)\n\tat io.kestra.core.trace.NoopTracer.inCurrentContext(NoopTracer.java:16)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.callJob(AbstractWorkerJobProcessor.java:90)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runAttempt(WorkerTaskProcessor.java:442)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:260)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:181)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:103)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:57)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.process(AbstractWorkerJobProcessor.java:66)\n\tat io.kestra.worker.WorkerJobExecutor$WorkerJobConsumer.lambda$doOnLoop$0(WorkerJobExecutor.java:319)\n\tat io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)\n\tat java.base/java.util.concurrent.FutureTask.run(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n"
+  }
+]

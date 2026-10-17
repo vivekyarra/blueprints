@@ -1,0 +1,58 @@
+{
+  "tenantId": "main",
+  "id": "2AJ7p0n7qfOhOObq8UJdQ8",
+  "namespace": "company.search",
+  "flowId": "opensearch-reindex-alias-cutover",
+  "flowRevision": 1,
+  "trigger": {
+    "id": "request_migration",
+    "type": "io.kestra.plugin.core.trigger.Webhook",
+    "variables": {
+      "body": {},
+      "headers": {
+        "Accept": [
+          "*/*"
+        ],
+        "Accept-Encoding": [
+          "gzip, deflate"
+        ],
+        "Connection": [
+          "keep-alive"
+        ],
+        "Content-Length": [
+          "2"
+        ],
+        "Content-Type": [
+          "application/json"
+        ],
+        "Host": [
+          "localhost:18083"
+        ],
+        "User-Agent": [
+          "python-requests/2.33.0"
+        ]
+      },
+      "parameters": {}
+    }
+  },
+  "labels": [
+    {
+      "key": "system.from",
+      "value": "trigger"
+    },
+    {
+      "key": "system.correlationId",
+      "value": "2AJ7p0n7qfOhOObq8UJdQ8"
+    }
+  ],
+  "state": {
+    "current": "CREATED",
+    "histories": [
+      {
+        "state": "CREATED",
+        "date": "2026-10-17T15:11:47.258758138Z"
+      }
+    ],
+    "startDate": "2026-10-17T15:11:47.258758138Z"
+  }
+}

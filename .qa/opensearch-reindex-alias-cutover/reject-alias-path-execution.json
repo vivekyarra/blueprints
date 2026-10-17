@@ -1,0 +1,129 @@
+{
+  "tenantId": "main",
+  "id": "2G68yEWzTpWJPUIx899fmm",
+  "namespace": "company.search",
+  "flowId": "opensearch-reindex-alias-cutover",
+  "flowRevision": 2,
+  "taskRunList": [
+    {
+      "id": "5jwB4rWmlcZmNp3Yr1IaP8",
+      "taskId": "validate_names",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T15:20:25.823843Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T15:20:25.823844Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T15:20:25.824997Z"
+              }
+            ],
+            "duration": "PT0.001154S",
+            "startDate": "2026-10-17T15:20:25.823843Z",
+            "endDate": "2026-10-17T15:20:25.824997Z"
+          },
+          "workerId": "4UGXVLXIL5iD9GpZ5Cyv5j"
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T15:20:25.799487Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T15:20:25.800140Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T15:20:25.823605Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T15:20:25.825068Z"
+          }
+        ],
+        "duration": "PT0.025581S",
+        "startDate": "2026-10-17T15:20:25.799487Z",
+        "endDate": "2026-10-17T15:20:25.825068Z"
+      }
+    }
+  ],
+  "inputs": {
+    "mappings": {
+      "dynamic": "strict",
+      "properties": {
+        "sku": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "english"
+        },
+        "price": {
+          "type": "double"
+        }
+      }
+    },
+    "canary_min_hits": 1,
+    "replicas": 0,
+    "canary_query": {
+      "match": {
+        "title": "wireless"
+      }
+    },
+    "source_index": "qa-search-140a6c3dda-v1",
+    "read_alias": "qa-search-140a6c3dda-live/path"
+  },
+  "labels": [
+    {
+      "key": "system.from",
+      "value": "api"
+    },
+    {
+      "key": "system.correlationId",
+      "value": "2G68yEWzTpWJPUIx899fmm"
+    }
+  ],
+  "variables": {
+    "candidate": "{{ inputs.read_alias }}-kestra-{{ execution.id | lower }}"
+  },
+  "state": {
+    "current": "FAILED",
+    "histories": [
+      {
+        "state": "CREATED",
+        "date": "2026-10-17T15:20:25.798029Z"
+      },
+      {
+        "state": "RUNNING",
+        "date": "2026-10-17T15:20:25.800097Z"
+      },
+      {
+        "state": "FAILED",
+        "date": "2026-10-17T15:20:25.866574Z"
+      }
+    ],
+    "duration": "PT0.068545S",
+    "startDate": "2026-10-17T15:20:25.798029Z",
+    "endDate": "2026-10-17T15:20:25.866574Z"
+  },
+  "originalId": "2G68yEWzTpWJPUIx899fmm",
+  "metadata": {
+    "attemptNumber": 1,
+    "originalCreatedDate": "2026-10-17T15:20:25.798033Z",
+    "concurrencyScopes": [
+      "main|company.search|opensearch-reindex-alias-cutover"
+    ]
+  }
+}

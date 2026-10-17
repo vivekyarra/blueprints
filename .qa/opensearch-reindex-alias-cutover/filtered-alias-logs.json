@@ -1,0 +1,62 @@
+[
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "source_settings",
+    "executionId": "1C4rTg72bRs2RpJYoXO9Bg",
+    "taskRunId": "2maEOf9I3mM5gA6A6pVKUY",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:15:40.308390Z",
+    "level": "DEBUG",
+    "thread": "worker-default_176",
+    "message": "Starting request: Request{method='GET', endpoint='qa-search-8305ef55f2-v1/_settings', params={flat_settings=true}, options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "read_alias",
+    "executionId": "1C4rTg72bRs2RpJYoXO9Bg",
+    "taskRunId": "1xYQykTKnDlaHErLrPmXa",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:15:40.475334Z",
+    "level": "DEBUG",
+    "thread": "worker-default_178",
+    "message": "Starting request: Request{method='GET', endpoint='_alias/qa-search-8305ef55f2-live', options=RequestOptions{}}"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "require_single_plain_alias",
+    "executionId": "1C4rTg72bRs2RpJYoXO9Bg",
+    "taskRunId": "4xLehTpVBz6UXNrSBJ08Vc",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:15:40.622345Z",
+    "level": "ERROR",
+    "thread": "worker-default_179",
+    "message": "Assertion `{{ (outputs.read_alias.response[inputs.source_index].aliases[inputs.read_alias] | length == 0) or ((outputs.read_alias.response[inputs.source_index].aliases[inputs.read_alias] | length == 1) and (outputs.read_alias.response[inputs.source_index].aliases[inputs.read_alias].is_write_index ?? true) == false) }}` failed!"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "require_single_plain_alias",
+    "executionId": "1C4rTg72bRs2RpJYoXO9Bg",
+    "taskRunId": "4xLehTpVBz6UXNrSBJ08Vc",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:15:40.623006Z",
+    "level": "ERROR",
+    "thread": "worker-default_179",
+    "message": "1 assertion failed!"
+  },
+  {
+    "namespace": "company.search",
+    "flowId": "opensearch-reindex-alias-cutover",
+    "taskId": "require_single_plain_alias",
+    "executionId": "1C4rTg72bRs2RpJYoXO9Bg",
+    "taskRunId": "4xLehTpVBz6UXNrSBJ08Vc",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T15:15:40.623006Z",
+    "level": "DEBUG",
+    "thread": "worker-default_179",
+    "message": "java.lang.Exception: 1 assertion failed!\n\tat io.kestra.plugin.core.execution.Assert.run(Assert.java:110)\n\tat io.kestra.plugin.core.execution.Assert.run(Assert.java:27)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.lambda$doCall$0(WorkerTaskCallable.java:63)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.callWithTimeout(AbstractWorkerCallable.java:170)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.doCall(WorkerTaskCallable.java:61)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.call(AbstractWorkerCallable.java:81)\n\tat io.kestra.worker.WorkerSecurityService.callInSecurityContext(WorkerSecurityService.java:12)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.lambda$callJob$0(AbstractWorkerJobProcessor.java:96)\n\tat io.kestra.core.trace.NoopTracer.inCurrentContext(NoopTracer.java:16)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.callJob(AbstractWorkerJobProcessor.java:90)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runAttempt(WorkerTaskProcessor.java:442)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:260)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:181)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:103)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:57)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.process(AbstractWorkerJobProcessor.java:66)\n\tat io.kestra.worker.WorkerJobExecutor$WorkerJobConsumer.lambda$doOnLoop$0(WorkerJobExecutor.java:319)\n\tat io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)\n\tat java.base/java.util.concurrent.FutureTask.run(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n"
+  }
+]

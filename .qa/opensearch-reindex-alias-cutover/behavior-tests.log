@@ -1,0 +1,10 @@
+{"case": "reject-index-selector", "execution": "3oG7qcVXcrsKJCtASwdxWQ", "state": "FAILED", "outputs": null}
+{"case": "reject-alias-path", "execution": "2G68yEWzTpWJPUIx899fmm", "state": "FAILED", "outputs": null}
+[]
+Traceback (most recent call last):
+  File "D:\kestra\search-qa\verify_behavior.py", line 32, in <module>
+    execute('alias-changed-during-copy',source,alias,'FAILED',watcher=move_alias)
+  File "D:\kestra\search-qa\run_runtime.py", line 100, in execute
+    assert execution['state']['current']==expected,(label,eid,execution['state'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('alias-changed-during-copy', '148DxzaURspMXAxhUns0hH', {'current': 'SUCCESS', 'histories': [{'state': 'CREATED', 'date': '2026-10-17T15:20:47.594426Z'}, {'state': 'RUNNING', 'date': '2026-10-17T15:20:47.597534Z'}, {'state': 'PAUSED', 'date': '2026-10-17T15:20:48.490639Z'}, {'state': 'RUNNING', 'date': '2026-10-17T15:20:50.751Z'}, {'state': 'SUCCESS', 'date': '2026-10-17T15:20:51.593864Z'}], 'duration': 'PT3.999438S', 'startDate': '2026-10-17T15:20:47.594426Z', 'endDate': '2026-10-17T15:20:51.593864Z'})
