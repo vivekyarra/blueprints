@@ -1,0 +1,182 @@
+id: kafka-compacted-postgres-state
+namespace: company.streaming
+description: Keep the latest JSON value per Kafka key in PostgreSQL, with data and
+  read positions saved in one transaction.
+concurrency:
+  limit: 1
+  behavior: QUEUE
+inputs:
+- id: topic
+  type: STRING
+  defaults: customers
+  description: Compacted topic with UTF-8 keys, JSON values and a fixed partition
+    count.
+- id: max_records
+  type: INT
+  defaults: 1000
+  min: 1
+  max: 100000
+- id: poll_seconds
+  type: INT
+  defaults: 10
+  min: 1
+  max: 60
+- id: docker_network
+  type: STRING
+  defaults: bridge
+  description: Docker network from which Kafka and PostgreSQL are reachable.
+tasks:
+- id: create_state_tables
+  type: io.kestra.plugin.jdbc.postgresql.Queries
+  description: Create durable read positions, keyed values, and a view that excludes
+    tombstones.
+  url: '{{ secret(''KAFKA_STATE_JDBC_URL'') }}'
+  username: '{{ secret(''KAFKA_STATE_USER'') }}'
+  password: '{{ secret(''KAFKA_STATE_PASSWORD'') }}'
+  sql: "CREATE SCHEMA IF NOT EXISTS kafka_state;\nCREATE TABLE IF NOT EXISTS kafka_state.positions\
+    \ (\n  topic text PRIMARY KEY,\n  cluster_id text NOT NULL,\n  topic_id text NOT\
+    \ NULL,\n  next_offsets jsonb NOT NULL,\n  updated_at timestamptz NOT NULL DEFAULT\
+    \ now()\n);\nCREATE TABLE IF NOT EXISTS kafka_state.records (\n  topic text NOT\
+    \ NULL,\n  record_key text NOT NULL,\n  payload jsonb,\n  deleted boolean NOT\
+    \ NULL,\n  kafka_partition integer NOT NULL,\n  kafka_offset bigint NOT NULL CHECK\
+    \ (kafka_offset >= 0),\n  PRIMARY KEY (topic, record_key),\n  CHECK (deleted =\
+    \ (payload IS NULL))\n);\nCREATE OR REPLACE VIEW kafka_state.current_values AS\n\
+    \  SELECT topic, record_key, payload\n  FROM kafka_state.records WHERE NOT deleted;\n"
+- id: materialize_batch
+  type: io.kestra.plugin.scripts.python.Script
+  description: Read from database-owned offsets; commit values, tombstones and next
+    offsets together. Never commit Kafka group offsets.
+  taskRunner:
+    type: io.kestra.plugin.scripts.runner.docker.Docker
+    networkMode: '{{ inputs.docker_network }}'
+  containerImage: python:3.12-slim
+  beforeCommands:
+  - pip install --quiet kestra==1.0.0 confluent-kafka==2.12.2 "psycopg[binary]==3.2.12"
+  env:
+    KAFKA_PROPERTIES: '{{ secret(''KAFKA_STATE_PROPERTIES'') }}'
+    PG_DSN: '{{ secret(''KAFKA_STATE_DSN'') }}'
+    PGUSER: '{{ secret(''KAFKA_STATE_USER'') }}'
+    PGPASSWORD: '{{ secret(''KAFKA_STATE_PASSWORD'') }}'
+    TOPIC: '{{ inputs.topic }}'
+    MAX_RECORDS: '{{ inputs.max_records }}'
+    POLL_SECONDS: '{{ inputs.poll_seconds }}'
+  outputFiles:
+  - batch-report.json
+  script: "import json\nimport os\nimport time\nimport uuid\nfrom pathlib import Path\n\
+    \nimport psycopg\nfrom confluent_kafka import Consumer, KafkaError, TopicPartition,\
+    \ TopicCollection\nfrom confluent_kafka.admin import AdminClient\nfrom psycopg.types.json\
+    \ import Jsonb\nfrom kestra import Kestra\n\ntopic = os.environ['TOPIC']\nlimit\
+    \ = int(os.environ['MAX_RECORDS'])\nseconds = int(os.environ['POLL_SECONDS'])\n\
+    if not topic or not 1 <= limit <= 100000 or not 1 <= seconds <= 60:\n    raise\
+    \ ValueError('Invalid topic or batch bounds')\nconfig = json.loads(os.environ['KAFKA_PROPERTIES'])\n\
+    admin = AdminClient(config)\nconfig.update({\n    'group.id': 'kestra-state-'\
+    \ + str(uuid.uuid4()),\n    'enable.auto.commit': False,\n    'enable.auto.offset.store':\
+    \ False,\n    'auto.offset.reset': 'error',\n    'isolation.level': 'read_committed',\n\
+    \    'enable.partition.eof': True,\n    'allow.auto.create.topics': False,\n})\n\
+    consumer = Consumer(config)\nreport = {'topic': topic, 'consumed': 0, 'tombstones':\
+    \ 0}\n\ndef invalid_constant(value):\n    raise ValueError('Non-finite JSON numbers\
+    \ are not supported')\n\ntry:\n    metadata = consumer.list_topics(topic, timeout=15)\n\
+    \    info = metadata.topics.get(topic)\n    if info is None or info.error or not\
+    \ info.partitions:\n        raise RuntimeError('Topic metadata is unavailable')\n\
+    \    cluster_id = metadata.cluster_id\n    topic_id = str(admin.describe_topics(TopicCollection([topic]),\n\
+    \        request_timeout=15)[topic].result().topic_id)\n    if not cluster_id\
+    \ or topic_id == 'AAAAAAAAAAAAAAAAAAAAAA':\n        raise RuntimeError('Broker\
+    \ must expose cluster and topic IDs')\n    partitions = sorted(info.partitions)\n\
+    \    with psycopg.connect(os.environ['PG_DSN'], connect_timeout=15) as conn:\n\
+    \        conn.execute(\"SET LOCAL statement_timeout = '90s'\")\n        locked\
+    \ = conn.execute(\n            'SELECT pg_try_advisory_xact_lock(hashtextextended(%s,\
+    \ 0))',\n            ('kestra-kafka-state:' + topic,)).fetchone()[0]\n       \
+    \ if not locked:\n            raise RuntimeError('Another materializer holds this\
+    \ topic lock')\n        row = conn.execute(\n            'SELECT next_offsets,\
+    \ cluster_id, topic_id FROM kafka_state.positions WHERE topic = %s FOR UPDATE',\n\
+    \            (topic,)).fetchone()\n        saved = row[0] if row else None\n \
+    \       if row and (row[1], row[2]) != (cluster_id, topic_id):\n            raise\
+    \ RuntimeError('Cluster or topic ID changed; rebuild into an empty destination')\n\
+    \        if saved is not None and set(saved) != {str(p) for p in partitions}:\n\
+    \            raise RuntimeError('Partition set changed; rebuild into an empty\
+    \ destination')\n        if saved is None and conn.execute(\n            'SELECT\
+    \ 1 FROM kafka_state.records WHERE topic = %s LIMIT 1',\n            (topic,)).fetchone():\n\
+    \            raise RuntimeError('Values exist without read positions; restore\
+    \ both together')\n        starts = {}\n        for p in partitions:\n       \
+    \     low, high = consumer.get_watermark_offsets(TopicPartition(topic, p), timeout=15)\n\
+    \            start = int(saved[str(p)]) if saved is not None else low\n      \
+    \      if not low <= start <= high:\n                raise RuntimeError(f'Partition\
+    \ {p}: saved offset is outside the retained log')\n            starts[p] = start\n\
+    \        consumer.assign([TopicPartition(topic, p, start) for p, start in starts.items()])\n\
+    \        deadline = time.monotonic() + seconds\n        finished = set()\n   \
+    \     while report['consumed'] < limit and time.monotonic() < deadline:\n    \
+    \        message = consumer.poll(min(1.0, max(0, deadline - time.monotonic())))\n\
+    \            if message is None:\n                continue\n            if message.error():\n\
+    \                if message.error().code() == KafkaError._PARTITION_EOF:\n   \
+    \                 finished.add(message.partition())\n                    if len(finished)\
+    \ == len(partitions):\n                        break\n                    continue\n\
+    \                raise RuntimeError(str(message.error()))\n            finished.discard(message.partition())\n\
+    \            if message.key() is None:\n                raise ValueError('Null\
+    \ Kafka key; the entire batch will roll back')\n            key = message.key().decode('utf-8')\n\
+    \            deleted = message.value() is None\n            payload = None if\
+    \ deleted else Jsonb(json.loads(\n                message.value().decode('utf-8'),\
+    \ parse_constant=invalid_constant))\n            previous = conn.execute(\n  \
+    \              'SELECT kafka_partition FROM kafka_state.records WHERE topic =\
+    \ %s AND record_key = %s',\n                (topic, key)).fetchone()\n       \
+    \     if previous and previous[0] != message.partition():\n                raise\
+    \ ValueError('A key moved partitions; there is no cross-partition offset order')\n\
+    \            conn.execute('''\n                INSERT INTO kafka_state.records\
+    \ AS r\n                    (topic, record_key, payload, deleted, kafka_partition,\
+    \ kafka_offset)\n                VALUES (%s, %s, %s, %s, %s, %s)\n           \
+    \     ON CONFLICT (topic, record_key) DO UPDATE SET\n                    payload\
+    \ = EXCLUDED.payload, deleted = EXCLUDED.deleted,\n                    kafka_offset\
+    \ = EXCLUDED.kafka_offset\n                WHERE r.kafka_offset < EXCLUDED.kafka_offset\n\
+    \                ''', (topic, key, payload, deleted, message.partition(), message.offset()))\n\
+    \            report['consumed'] += 1\n            report['tombstones'] += int(deleted)\n\
+    \        positions = consumer.position([TopicPartition(topic, p) for p in partitions])\n\
+    \        offsets = {str(tp.partition): max(starts[tp.partition], tp.offset) for\
+    \ tp in positions}\n        current = admin.describe_topics(TopicCollection([topic]),\
+    \ request_timeout=15)[topic].result()\n        if str(current.topic_id) != topic_id\
+    \ or sorted(p.id for p in current.partitions) != partitions:\n            raise\
+    \ RuntimeError('Topic changed during this batch; no state was committed')\n  \
+    \      conn.execute('''\n            INSERT INTO kafka_state.positions (topic,\
+    \ cluster_id, topic_id, next_offsets)\n            VALUES (%s, %s, %s, %s)\n \
+    \           ON CONFLICT (topic) DO UPDATE SET\n                next_offsets =\
+    \ EXCLUDED.next_offsets, updated_at = now()\n            ''', (topic, cluster_id,\
+    \ topic_id, Jsonb(offsets)))\n        report['next_offsets'] = offsets\n     \
+    \   report['live_keys'] = conn.execute(\n            'SELECT count(*) FROM kafka_state.current_values\
+    \ WHERE topic = %s',\n            (topic,)).fetchone()[0]\n    # This point is\
+    \ reached only after PostgreSQL commits the whole transaction.\n    Path('batch-report.json').write_text(json.dumps(report,\
+    \ indent=2))\n    Kestra.outputs(report)\nfinally:\n    consumer.close()\n"
+- id: check_saved_positions
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  description: Check that every saved record is covered by a durable next offset.
+  url: '{{ secret(''KAFKA_STATE_JDBC_URL'') }}'
+  username: '{{ secret(''KAFKA_STATE_USER'') }}'
+  password: '{{ secret(''KAFKA_STATE_PASSWORD'') }}'
+  fetchType: FETCH_ONE
+  parameters:
+    topic: '{{ inputs.topic }}'
+  sql: "SELECT NOT EXISTS (\n  SELECT 1 FROM kafka_state.records r\n  LEFT JOIN kafka_state.positions\
+    \ p ON p.topic = r.topic\n  WHERE r.topic = :topic AND (p.topic IS NULL\n    \
+    \ OR NOT jsonb_exists(p.next_offsets, CAST(r.kafka_partition AS text))\n     OR\
+    \ CAST(p.next_offsets ->> CAST(r.kafka_partition AS text) AS bigint) <= r.kafka_offset)\n\
+    ) AS valid;\n"
+- id: require_consistent_state
+  type: io.kestra.plugin.core.flow.If
+  condition: '{{ not outputs.check_saved_positions.row.valid }}'
+  then:
+  - id: stop_on_inconsistent_state
+    type: io.kestra.plugin.core.execution.Fail
+    errorMessage: A record is ahead of its durable read position. Check for external
+      writes or a partial database restore.
+triggers:
+- id: poll_topic
+  type: io.kestra.plugin.core.trigger.Schedule
+  cron: '* * * * *'
+  disabled: true
+outputs:
+- id: batch_report
+  type: FILE
+  value: '{{ outputs.materialize_batch.outputFiles[''batch-report.json''] }}'
+- id: consumed
+  type: INT
+  value: '{{ outputs.materialize_batch.vars.consumed }}'
+- id: live_keys
+  type: INT
+  value: '{{ outputs.materialize_batch.vars.live_keys }}'

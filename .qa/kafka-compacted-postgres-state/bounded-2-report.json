@@ -1,0 +1,9 @@
+{
+  "topic": "qa-c1e3020c43b4",
+  "consumed": 1,
+  "tombstones": 0,
+  "next_offsets": {
+    "0": 2
+  },
+  "live_keys": 1
+}

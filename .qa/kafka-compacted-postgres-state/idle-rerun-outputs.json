@@ -1,0 +1,5 @@
+{
+  "consumed": 0,
+  "batch_report": "kestra:///company/streaming/kafka-compacted-postgres-state/executions/6LVW00r6zFmI0KndzlaBmK/tasks/materialize-batch/6f0wIeh01dnMiuypXV3sgS/1pHQzS4YiSVhpqrorK4XOe-batch-report.json",
+  "live_keys": 3
+}

@@ -1,0 +1,7 @@
+test_process_kill_does_not_commit_partial_batch (__main__.MaterializerTest.test_process_kill_does_not_commit_partial_batch) ... ok
+test_randomized_3500_records_matches_independent_oracle (__main__.MaterializerTest.test_randomized_3500_records_matches_independent_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 28.118s
+
+OK

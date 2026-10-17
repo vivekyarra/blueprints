@@ -1,0 +1,19 @@
+test_aborted_transaction_not_materialized (__main__.MaterializerTest.test_aborted_transaction_not_materialized) ... ok
+test_bounded_batches_resume_without_skipping (__main__.MaterializerTest.test_bounded_batches_resume_without_skipping) ... ok
+test_cluster_identity_change_fails (__main__.MaterializerTest.test_cluster_identity_change_fails) ... ok
+test_database_failure_rolls_back_values_and_positions (__main__.MaterializerTest.test_database_failure_rolls_back_values_and_positions) ... ok
+test_invalid_json_rolls_back_prior_valid_record (__main__.MaterializerTest.test_invalid_json_rolls_back_prior_valid_record) ... ok
+test_key_partition_change_rolls_back (__main__.MaterializerTest.test_key_partition_change_rolls_back) ... ok
+test_latest_tombstone_unicode_empty_key_and_json_null (__main__.MaterializerTest.test_latest_tombstone_unicode_empty_key_and_json_null) ... ok
+test_lock_excludes_second_writer (__main__.MaterializerTest.test_lock_excludes_second_writer) ... ok
+test_missing_positions_cannot_reuse_existing_values (__main__.MaterializerTest.test_missing_positions_cannot_reuse_existing_values) ... ok
+test_nonfinite_json_rolls_back (__main__.MaterializerTest.test_nonfinite_json_rolls_back) ... ok
+test_null_key_rolls_back (__main__.MaterializerTest.test_null_key_rolls_back) ... ok
+test_offsets_outside_retention_are_not_reset (__main__.MaterializerTest.test_offsets_outside_retention_are_not_reset) ... ok
+test_partition_addition_fails (__main__.MaterializerTest.test_partition_addition_fails) ... ok
+test_recreated_topic_with_same_name_fails (__main__.MaterializerTest.test_recreated_topic_with_same_name_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 64.619s
+
+OK

@@ -1,0 +1,2 @@
+kafka-compacted-postgres-state.yaml PASS a262f7ab619ce49737927b9f76897c2ffd1cf70a439dff86d62a909a5f9a15d3
+csv-postgres-parallel-snapshot.yaml PASS add89da59686de441aa2c3207332e05ad77aa36dbceefd95cccbb610de4e0800

@@ -1,0 +1,159 @@
+{
+  "tenantId": "main",
+  "id": "uf4pm3b1V0v58s01MS52q",
+  "namespace": "company.streaming",
+  "flowId": "kafka-compacted-postgres-state",
+  "flowRevision": 3,
+  "taskRunList": [
+    {
+      "id": "6cEaVcEARkoU8xLIKlk8BZ",
+      "taskId": "create_state_tables",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T14:36:54.665786Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T14:36:54.665796Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T14:36:55.369528Z"
+              }
+            ],
+            "duration": "PT0.703742S",
+            "startDate": "2026-10-17T14:36:54.665786Z",
+            "endDate": "2026-10-17T14:36:55.369528Z"
+          },
+          "workerId": "5IYeInckG0eNglD4IApSm6"
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T14:36:54.364521Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T14:36:54.433166Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T14:36:54.600315Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T14:36:55.370057Z"
+          }
+        ],
+        "duration": "PT1.005536S",
+        "startDate": "2026-10-17T14:36:54.364521Z",
+        "endDate": "2026-10-17T14:36:55.370057Z"
+      }
+    },
+    {
+      "id": "2DDL002FP4irPssFNNEzZb",
+      "taskId": "materialize_batch",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T14:36:55.601967Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T14:36:55.601973Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T14:38:35.373769Z"
+              }
+            ],
+            "duration": "PT1M39.771802S",
+            "startDate": "2026-10-17T14:36:55.601967Z",
+            "endDate": "2026-10-17T14:38:35.373769Z"
+          },
+          "workerId": "5IYeInckG0eNglD4IApSm6"
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T14:36:55.533376Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T14:36:55.545130Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T14:36:55.601149Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T14:38:35.374053Z"
+          }
+        ],
+        "duration": "PT1M39.840677S",
+        "startDate": "2026-10-17T14:36:55.533376Z",
+        "endDate": "2026-10-17T14:38:35.374053Z"
+      }
+    }
+  ],
+  "inputs": {
+    "poll_seconds": 2,
+    "topic": "qa-9a0b3ea4d158",
+    "max_records": 1000,
+    "docker_network": "kafka-state-qa"
+  },
+  "labels": [
+    {
+      "key": "system.from",
+      "value": "api"
+    },
+    {
+      "key": "system.correlationId",
+      "value": "uf4pm3b1V0v58s01MS52q"
+    }
+  ],
+  "state": {
+    "current": "FAILED",
+    "histories": [
+      {
+        "state": "CREATED",
+        "date": "2026-10-17T14:36:54.232Z"
+      },
+      {
+        "state": "RUNNING",
+        "date": "2026-10-17T14:36:54.433040Z"
+      },
+      {
+        "state": "FAILED",
+        "date": "2026-10-17T14:38:36.193143Z"
+      }
+    ],
+    "duration": "PT1M41.961143S",
+    "startDate": "2026-10-17T14:36:54.232Z",
+    "endDate": "2026-10-17T14:38:36.193143Z"
+  },
+  "originalId": "uf4pm3b1V0v58s01MS52q",
+  "metadata": {
+    "attemptNumber": 1,
+    "originalCreatedDate": "2026-10-17T14:36:54.232017Z",
+    "concurrencyScopes": [
+      "main|company.streaming|kafka-compacted-postgres-state"
+    ]
+  }
+}

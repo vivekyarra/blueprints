@@ -1,0 +1,11 @@
+{
+  "topic": "qa-2abaa20ac709",
+  "consumed": 0,
+  "tombstones": 0,
+  "next_offsets": {
+    "0": 1030,
+    "1": 1243,
+    "2": 1227
+  },
+  "live_keys": 169
+}
