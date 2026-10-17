@@ -1,0 +1,37 @@
+{
+  "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+  "changed": 10000,
+  "difference_count": 10000,
+  "duration_seconds": 0.312,
+  "examples": [
+    {
+      "fields": [
+        "full_name"
+      ],
+      "id": 1,
+      "kind": "CHANGED"
+    },
+    {
+      "fields": [
+        "full_name"
+      ],
+      "id": 2,
+      "kind": "CHANGED"
+    },
+    {
+      "fields": [
+        "full_name"
+      ],
+      "id": 3,
+      "kind": "CHANGED"
+    }
+  ],
+  "examples_truncated": true,
+  "extra": 0,
+  "matched": 0,
+  "missing": 0,
+  "reason": "ROW_DIFFERENCES",
+  "replica_rows": 10000,
+  "source_rows": 10000,
+  "status": "BLOCK"
+}

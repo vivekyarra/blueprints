@@ -1,0 +1,26 @@
+[
+  {
+    "namespace": "company.team",
+    "flowId": "postgres-cdc-cutover-parity-audit",
+    "taskId": "stop_unconfirmed_cutover",
+    "executionId": "1y8KBLJLp0DmSJTM5Fdnh0",
+    "taskRunId": "6P914JDPJRcMwdREg0xIQZ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T12:41:50.166158Z",
+    "level": "ERROR",
+    "thread": "worker-default_35",
+    "message": "Pause source writes, drain CDC, confirm cutover_ready, and provide valid scan limits."
+  },
+  {
+    "namespace": "company.team",
+    "flowId": "postgres-cdc-cutover-parity-audit",
+    "taskId": "stop_unconfirmed_cutover",
+    "executionId": "1y8KBLJLp0DmSJTM5Fdnh0",
+    "taskRunId": "6P914JDPJRcMwdREg0xIQZ",
+    "attemptNumber": 0,
+    "timestamp": "2026-10-17T12:41:50.166158Z",
+    "level": "DEBUG",
+    "thread": "worker-default_35",
+    "message": "java.lang.Exception: Pause source writes, drain CDC, confirm cutover_ready, and provide valid scan limits.\n\tat io.kestra.plugin.core.execution.Fail.run(Fail.java:140)\n\tat io.kestra.plugin.core.execution.Fail.run(Fail.java:20)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.lambda$doCall$0(WorkerTaskCallable.java:63)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.callWithTimeout(AbstractWorkerCallable.java:170)\n\tat io.kestra.worker.processors.internals.WorkerTaskCallable.doCall(WorkerTaskCallable.java:61)\n\tat io.kestra.worker.processors.internals.AbstractWorkerCallable.call(AbstractWorkerCallable.java:81)\n\tat io.kestra.worker.WorkerSecurityService.callInSecurityContext(WorkerSecurityService.java:12)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.lambda$callJob$0(AbstractWorkerJobProcessor.java:96)\n\tat io.kestra.core.trace.NoopTracer.inCurrentContext(NoopTracer.java:16)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.callJob(AbstractWorkerJobProcessor.java:90)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runAttempt(WorkerTaskProcessor.java:442)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:260)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.runTask(WorkerTaskProcessor.java:181)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:103)\n\tat io.kestra.worker.processors.WorkerTaskProcessor.doProcess(WorkerTaskProcessor.java:57)\n\tat io.kestra.worker.processors.AbstractWorkerJobProcessor.process(AbstractWorkerJobProcessor.java:66)\n\tat io.kestra.worker.WorkerJobExecutor$WorkerJobConsumer.lambda$doOnLoop$0(WorkerJobExecutor.java:319)\n\tat io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)\n\tat java.base/java.util.concurrent.FutureTask.run(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n"
+  }
+]

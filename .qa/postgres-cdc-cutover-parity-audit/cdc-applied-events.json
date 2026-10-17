@@ -1,0 +1,20 @@
+[
+  {
+    "execution_id": "3BbfwIfNXIF4B4qlGdd5WL",
+    "state": "SUCCESS",
+    "events": 12,
+    "keys": 12,
+    "upserted": 12,
+    "deleted": 0,
+    "skipped_stale": 0
+  },
+  {
+    "execution_id": "3J6oLAZNvmifHwarFg1Dzz",
+    "state": "SUCCESS",
+    "events": 3,
+    "keys": 3,
+    "upserted": 2,
+    "deleted": 1,
+    "skipped_stale": 0
+  }
+]

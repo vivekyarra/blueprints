@@ -1,0 +1,155 @@
+{
+  "tenantId": "main",
+  "id": "1y8KBLJLp0DmSJTM5Fdnh0",
+  "namespace": "company.team",
+  "flowId": "postgres-cdc-cutover-parity-audit",
+  "flowRevision": 1,
+  "taskRunList": [
+    {
+      "id": "2V4qtAm0w8ci6KIjIElBxw",
+      "taskId": "validate_cutover_window",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:41:50.119184Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:41:50.119184Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T12:41:50.190815Z"
+              }
+            ],
+            "duration": "PT0.071631S",
+            "endDate": "2026-10-17T12:41:50.190815Z",
+            "startDate": "2026-10-17T12:41:50.119184Z"
+          }
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:41:50.117473Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:41:50.119187Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T12:41:50.189630Z"
+          }
+        ],
+        "duration": "PT0.072157S",
+        "endDate": "2026-10-17T12:41:50.189630Z",
+        "startDate": "2026-10-17T12:41:50.117473Z"
+      }
+    },
+    {
+      "id": "6P914JDPJRcMwdREg0xIQZ",
+      "taskId": "stop_unconfirmed_cutover",
+      "parentTaskRunId": "2V4qtAm0w8ci6KIjIElBxw",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:41:50.164932Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:41:50.164935Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T12:41:50.167179Z"
+              }
+            ],
+            "duration": "PT0.002247S",
+            "endDate": "2026-10-17T12:41:50.167179Z",
+            "startDate": "2026-10-17T12:41:50.164932Z"
+          },
+          "workerId": "19NCk4Xbt7j613gE8dJG0G"
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:41:50.149129Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T12:41:50.153309Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:41:50.164437Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T12:41:50.167251Z"
+          }
+        ],
+        "duration": "PT0.018122S",
+        "endDate": "2026-10-17T12:41:50.167251Z",
+        "startDate": "2026-10-17T12:41:50.149129Z"
+      }
+    }
+  ],
+  "inputs": {
+    "cutover_ready": true,
+    "max_rows": 0,
+    "max_examples": 20,
+    "allow_empty": false
+  },
+  "labels": [
+    {
+      "key": "system.from",
+      "value": "api"
+    },
+    {
+      "key": "system.correlationId",
+      "value": "1y8KBLJLp0DmSJTM5Fdnh0"
+    }
+  ],
+  "state": {
+    "current": "FAILED",
+    "histories": [
+      {
+        "state": "CREATED",
+        "date": "2026-10-17T12:41:50.116255Z"
+      },
+      {
+        "state": "RUNNING",
+        "date": "2026-10-17T12:41:50.119147Z"
+      },
+      {
+        "state": "FAILED",
+        "date": "2026-10-17T12:41:50.194802Z"
+      }
+    ],
+    "duration": "PT0.078547S",
+    "endDate": "2026-10-17T12:41:50.194802Z",
+    "startDate": "2026-10-17T12:41:50.116255Z"
+  },
+  "originalId": "1y8KBLJLp0DmSJTM5Fdnh0",
+  "metadata": {
+    "attemptNumber": 1,
+    "originalCreatedDate": "2026-10-17T12:41:50.116259Z",
+    "concurrencyScopes": [
+      "main|company.team|postgres-cdc-cutover-parity-audit"
+    ]
+  }
+}

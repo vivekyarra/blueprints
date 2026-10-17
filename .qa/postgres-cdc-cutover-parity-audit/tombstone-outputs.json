@@ -1,0 +1,16 @@
+{
+  "vars": {
+    "reason": "PARITY_VERIFIED",
+    "replica_rows": 12,
+    "difference_count": 0,
+    "source_rows": 12,
+    "status": "PASS"
+  },
+  "exitCode": 0,
+  "outputFiles": {
+    "cdc-parity-report.json": "kestra:///company/team/postgres-cdc-cutover-parity-audit/executions/1JVOTHfZ6R8YJRF6glPmGI/tasks/compare-rows/6p8Gw0otYNaj5CuxixGdXd/4DJMvKxY0CuolWR18ZoxSh-cdc-parity-report.json"
+  },
+  "taskRunner": {
+    "containerId": "8adecb09ccb715eb51d2fb09f67abd6a442926711df588354039b1fc4419b01f"
+  }
+}

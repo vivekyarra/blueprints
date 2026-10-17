@@ -1,0 +1,20 @@
+{
+  "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+  "changed": 0,
+  "difference_count": 1,
+  "duration_seconds": 0.069,
+  "examples": [
+    {
+      "id": 3,
+      "kind": "MISSING_IN_REPLICA"
+    }
+  ],
+  "examples_truncated": false,
+  "extra": 0,
+  "matched": 11,
+  "missing": 1,
+  "reason": "ROW_DIFFERENCES",
+  "replica_rows": 11,
+  "source_rows": 12,
+  "status": "BLOCK"
+}

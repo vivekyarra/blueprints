@@ -1,0 +1,136 @@
+id: parity-cdc-fixture
+namespace: company.team
+description: 'Keep a PostgreSQL replica table in sync with a source table through
+  Debezium change data capture.
+
+  Inserts, updates and deletes are merged in order, and a restarted or late batch
+  never overwrites newer data.
+
+  '
+concurrency:
+  limit: 1
+  behavior: QUEUE
+variables:
+  max_deletes_per_batch: 500
+  mass_delete_kv_key: cdc_customers_allow_mass_delete
+tasks:
+- id: create_replica_tables
+  type: io.kestra.plugin.jdbc.postgresql.Queries
+  description: Create the replica table, the staging table and the live view if they
+    do not exist.
+  url: '{{ secret(''CDC_REPLICA_JDBC_URL'') }}'
+  username: postgres
+  password: parity_fixture_admin
+  sql: "CREATE SCHEMA IF NOT EXISTS cdc;\n\nCREATE TABLE IF NOT EXISTS cdc.customers\
+    \ (\n  id bigint PRIMARY KEY,\n  email text,\n  full_name text,\n  plan text,\n\
+    \  notes text,\n  updated_at timestamptz,\n  _cdc_lsn bigint NOT NULL,\n  _cdc_deleted\
+    \ boolean NOT NULL DEFAULT false,\n  _cdc_applied_at timestamptz NOT NULL DEFAULT\
+    \ now()\n);\n\nCREATE TABLE IF NOT EXISTS cdc.customers_changes (\n  seq bigserial\
+    \ PRIMARY KEY,\n  execution_id text NOT NULL,\n  id bigint NOT NULL,\n  email\
+    \ text,\n  full_name text,\n  plan text,\n  notes text,\n  updated_at text,\n\
+    \  deleted boolean NOT NULL,\n  metadata jsonb NOT NULL\n);\n\nCREATE INDEX IF\
+    \ NOT EXISTS customers_changes_execution_idx\n  ON cdc.customers_changes (execution_id);\n\
+    \nCREATE OR REPLACE VIEW cdc.customers_live AS\n  SELECT id, email, full_name,\
+    \ plan, notes, updated_at\n  FROM cdc.customers\n  WHERE NOT _cdc_deleted;\n"
+- id: stage_changes
+  type: io.kestra.plugin.jdbc.postgresql.Batch
+  description: Load every change event of this batch into the staging table, in capture
+    order.
+  url: '{{ secret(''CDC_REPLICA_JDBC_URL'') }}'
+  username: postgres
+  password: parity_fixture_admin
+  from: '{{ trigger.uris[''parity.customers''] }}'
+  sql: "INSERT INTO cdc.customers_changes\n  (execution_id, id, email, full_name,\
+    \ plan, notes, updated_at, deleted, metadata)\nVALUES ('{{ execution.id }}', ?,\
+    \ ?, ?, ?, ?, ?, ?, ?)\n"
+  columns:
+  - id
+  - email
+  - full_name
+  - plan
+  - notes
+  - updated_at
+  - deleted
+  - metadata
+- id: count_changes
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  description: Count the keys and deletes in this batch for the mass-delete guard.
+  url: '{{ secret(''CDC_REPLICA_JDBC_URL'') }}'
+  username: postgres
+  password: parity_fixture_admin
+  fetchType: FETCH_ONE
+  sql: "WITH latest AS (\n  SELECT DISTINCT ON (id) id, deleted\n  FROM cdc.customers_changes\n\
+    \  WHERE execution_id = '{{ execution.id }}'\n  ORDER BY id, (metadata -> 'source'\
+    \ ->> 'lsn')::bigint DESC, seq DESC\n)\nSELECT\n  count(*) AS keys,\n  count(*)\
+    \ FILTER (WHERE deleted) AS deletes\nFROM latest\n"
+- id: mass_delete_guard
+  type: io.kestra.plugin.core.flow.If
+  description: Stop before a batch that deletes more rows than expected is applied,
+    unless an operator approved it.
+  condition: '{{ outputs.count_changes.row.deletes > vars.max_deletes_per_batch and
+    kv(vars.mass_delete_kv_key, errorOnMissing=false) != true }}'
+  then:
+  - id: block_mass_delete
+    type: io.kestra.plugin.core.execution.Fail
+    description: Checked again on restart, so an approval set after the alert lets
+      the batch continue.
+    condition: '{{ kv(vars.mass_delete_kv_key, errorOnMissing=false) != true }}'
+    errorMessage: Batch deletes {{ outputs.count_changes.row.deletes }} rows, more
+      than {{ vars.max_deletes_per_batch }}. Nothing was applied. If the deletes are
+      expected, set KV key {{ vars.mass_delete_kv_key }} to true and restart this
+      execution.
+- id: apply_changes
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  description: Merge the latest event per key into the replica. Older events than
+    the replica row are skipped.
+  url: '{{ secret(''CDC_REPLICA_JDBC_URL'') }}'
+  username: postgres
+  password: parity_fixture_admin
+  fetchType: FETCH_ONE
+  sql: "WITH latest AS (\n  SELECT DISTINCT ON (id)\n    id, email, full_name, plan,\
+    \ notes,\n    updated_at::timestamptz AS updated_at,\n    deleted,\n    (metadata\
+    \ -> 'source' ->> 'lsn')::bigint AS lsn\n  FROM cdc.customers_changes\n  WHERE\
+    \ execution_id = '{{ execution.id }}'\n  ORDER BY id, lsn DESC, seq DESC\n),\n\
+    merged AS (\n  INSERT INTO cdc.customers AS r\n    (id, email, full_name, plan,\
+    \ notes, updated_at, _cdc_lsn, _cdc_deleted, _cdc_applied_at)\n  SELECT id, email,\
+    \ full_name, plan, notes, updated_at, lsn, deleted, now()\n  FROM latest\n  ON\
+    \ CONFLICT (id) DO UPDATE SET\n    email = CASE WHEN EXCLUDED._cdc_deleted THEN\
+    \ r.email ELSE EXCLUDED.email END,\n    full_name = CASE WHEN EXCLUDED._cdc_deleted\
+    \ THEN r.full_name ELSE EXCLUDED.full_name END,\n    plan = CASE WHEN EXCLUDED._cdc_deleted\
+    \ THEN r.plan ELSE EXCLUDED.plan END,\n    notes = CASE\n      WHEN EXCLUDED._cdc_deleted\
+    \ OR EXCLUDED.notes = '__debezium_unavailable_value' THEN r.notes\n      ELSE\
+    \ EXCLUDED.notes\n    END,\n    updated_at = CASE WHEN EXCLUDED._cdc_deleted THEN\
+    \ r.updated_at ELSE EXCLUDED.updated_at END,\n    _cdc_lsn = EXCLUDED._cdc_lsn,\n\
+    \    _cdc_deleted = EXCLUDED._cdc_deleted,\n    _cdc_applied_at = now()\n  WHERE\
+    \ r._cdc_lsn < EXCLUDED._cdc_lsn\n  RETURNING r._cdc_deleted\n),\ncleared AS (\n\
+    \  DELETE FROM cdc.customers_changes\n  WHERE execution_id = '{{ execution.id\
+    \ }}'\n  RETURNING 1\n)\nSELECT\n  (SELECT count(*) FROM cleared) AS events,\n\
+    \  (SELECT count(*) FROM latest) AS keys,\n  (SELECT count(*) FROM merged WHERE\
+    \ NOT _cdc_deleted) AS upserted,\n  (SELECT count(*) FROM merged WHERE _cdc_deleted)\
+    \ AS deleted,\n  (SELECT count(*) FROM latest) - (SELECT count(*) FROM merged)\
+    \ AS skipped_stale\n"
+- id: reset_mass_delete_approval
+  type: io.kestra.plugin.core.kv.Delete
+  description: Remove a one-time mass-delete approval after it was used.
+  key: '{{ vars.mass_delete_kv_key }}'
+  errorOnMissing: false
+- id: log_summary
+  type: io.kestra.plugin.core.log.Log
+  message: 'cdc.customers: {{ outputs.apply_changes.row.events }} events, {{ outputs.apply_changes.row.upserted
+    }} upserted, {{ outputs.apply_changes.row.deleted }} deleted, {{ outputs.apply_changes.row.skipped_stale
+    }} skipped as older than the replica.'
+triggers:
+- id: customers_changes
+  type: io.kestra.plugin.debezium.postgres.Trigger
+  hostname: 172.17.0.2
+  port: '5432'
+  username: postgres
+  password: parity_fixture_admin
+  database: parity
+  pluginName: PGOUTPUT
+  slotName: parity_audit_test
+  publicationName: parity_audit_test
+  snapshotMode: INITIAL
+  includedTables: public.customers
+  maxRecords: 5000
+  interval: PT5S

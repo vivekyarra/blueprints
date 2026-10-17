@@ -1,0 +1,20 @@
+test_changed (__main__.ComparatorTest.test_changed) ... ok
+test_duplicate_and_unordered_keys (__main__.ComparatorTest.test_duplicate_and_unordered_keys) ... ok
+test_empty (__main__.ComparatorTest.test_empty) ... ok
+test_equal (__main__.ComparatorTest.test_equal) ... ok
+test_exact_limit (__main__.ComparatorTest.test_exact_limit) ... ok
+test_extra (__main__.ComparatorTest.test_extra) ... ok
+test_invalid_keys (__main__.ComparatorTest.test_invalid_keys) ... ok
+test_large_integer_keys (__main__.ComparatorTest.test_large_integer_keys) ... ok
+test_lazy_row_limit (__main__.ComparatorTest.test_lazy_row_limit) ... ok
+test_missing (__main__.ComparatorTest.test_missing) ... ok
+test_null_and_unicode (__main__.ComparatorTest.test_null_and_unicode) ... ok
+test_randomized_oracle (__main__.ComparatorTest.test_randomized_oracle) ... ok
+test_row_limit (__main__.ComparatorTest.test_row_limit) ... ok
+test_sample_cap (__main__.ComparatorTest.test_sample_cap) ... ok
+test_wrong_shape (__main__.ComparatorTest.test_wrong_shape) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.083s
+
+OK

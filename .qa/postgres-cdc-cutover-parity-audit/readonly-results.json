@@ -1,0 +1,12 @@
+[
+  {
+    "database": "source",
+    "write_rejected": true,
+    "error": "ERROR:  permission denied for table customers"
+  },
+  {
+    "database": "replica",
+    "write_rejected": true,
+    "error": "ERROR:  permission denied for table customers"
+  }
+]

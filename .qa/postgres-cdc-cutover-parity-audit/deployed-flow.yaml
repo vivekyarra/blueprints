@@ -1,0 +1,195 @@
+id: postgres-cdc-cutover-parity-audit
+namespace: company.team
+description: 'Verify row-level parity between a PostgreSQL source table and its Debezium-backed
+  replica before cutover. Read-only, bounded-memory scan; no automatic repairs.
+
+  '
+concurrency:
+  limit: 1
+  behavior: QUEUE
+inputs:
+- id: cutover_ready
+  type: BOOL
+  defaults: false
+  description: Confirm source writes are paused and CDC is drained. This is an operator
+    prerequisite, not something the audit can prove.
+- id: max_rows
+  type: INT
+  defaults: 5000000
+  description: Refuse a scan when either inventory is larger than this limit. Allowed
+    range is 1 to 50000000.
+- id: max_examples
+  type: INT
+  defaults: 20
+  description: Maximum differing IDs stored in the report, from 1 to 100.
+- id: allow_empty
+  type: BOOL
+  defaults: false
+  description: Allow two empty tables to pass. Disabled by default to catch wrong
+    database targets.
+triggers:
+- id: scheduled_audit
+  type: io.kestra.plugin.core.trigger.Schedule
+  cron: 0 3 * * *
+  timezone: UTC
+  disabled: true
+  description: Enable only after you have established a quiescent source and caught-up
+    replica.
+tasks:
+- id: validate_cutover_window
+  type: io.kestra.plugin.core.flow.If
+  description: Require an explicit maintenance-window acknowledgement and valid limits
+    before querying either database.
+  condition: "{{ not inputs.cutover_ready or inputs.max_rows < 1 or inputs.max_rows\
+    \ > 50000000 or\n   inputs.max_examples < 1 or inputs.max_examples > 100 }}"
+  then:
+  - id: stop_unconfirmed_cutover
+    type: io.kestra.plugin.core.execution.Fail
+    errorMessage: Pause source writes, drain CDC, confirm cutover_ready, and provide
+      valid scan limits.
+- id: source_inventory
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  description: Read the source row count and prove the source table can be queried.
+  url: '{{ secret(''CDC_SOURCE_JDBC_URL'') }}'
+  username: '{{ secret(''CDC_SOURCE_USER'') }}'
+  password: '{{ secret(''CDC_SOURCE_PASSWORD'') }}'
+  fetchType: FETCH_ONE
+  timeout: PT10M
+  sql: 'SELECT count(*)::bigint AS source_rows FROM public.customers
+
+    '
+- id: replica_inventory
+  type: io.kestra.plugin.jdbc.postgresql.Query
+  description: Count visible replica rows and tombstones without modifying the database.
+  url: '{{ secret(''CDC_REPLICA_JDBC_URL'') }}'
+  username: '{{ secret(''CDC_REPLICA_USER'') }}'
+  password: '{{ secret(''CDC_REPLICA_PASSWORD'') }}'
+  fetchType: FETCH_ONE
+  timeout: PT10M
+  sql: "SELECT count(*) FILTER (WHERE NOT _cdc_deleted)::bigint AS replica_rows,\n\
+    \       count(*) FILTER (WHERE _cdc_deleted)::bigint AS tombstone_rows,\n    \
+    \   count(*) FILTER (WHERE _cdc_lsn IS NULL OR _cdc_lsn < 0\n                \
+    \        OR _cdc_deleted IS NULL)::bigint AS invalid_metadata_rows\nFROM cdc.customers\n"
+- id: check_inventory
+  type: io.kestra.plugin.core.flow.If
+  description: Reject oversized datasets and unexpected replica metadata before running
+    a long scan.
+  condition: "{{ outputs.source_inventory.row.source_rows > inputs.max_rows or\n \
+    \  outputs.replica_inventory.row.replica_rows > inputs.max_rows or\n   outputs.replica_inventory.row.invalid_metadata_rows\
+    \ > 0 }}"
+  then:
+  - id: stop_unsafe_scan
+    type: io.kestra.plugin.core.execution.Fail
+    errorMessage: Audit preflight failed. Check inventory counts and invalid CDC metadata.
+      source={{ outputs.source_inventory.row.source_rows }} replica={{ outputs.replica_inventory.row.replica_rows
+      }} invalid_metadata={{ outputs.replica_inventory.row.invalid_metadata_rows }}.
+- id: compare_rows
+  type: io.kestra.plugin.scripts.python.Script
+  description: 'Stream both tables by primary key using read-only repeatable-read
+    snapshots. Compare the key and five business columns, save bounded evidence and
+    never log row values.
+
+    '
+  taskRunner:
+    type: io.kestra.plugin.scripts.runner.docker.Docker
+  containerImage: python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+  dependencies:
+  - kestra==0.23.0
+  - psycopg[binary]==3.2.10
+  env:
+    SOURCE_DSN: '{{ secret(''CDC_SOURCE_DSN'') }}'
+    SOURCE_USER: '{{ secret(''CDC_SOURCE_USER'') }}'
+    SOURCE_PASSWORD: '{{ secret(''CDC_SOURCE_PASSWORD'') }}'
+    REPLICA_DSN: '{{ secret(''CDC_REPLICA_DSN'') }}'
+    REPLICA_USER: '{{ secret(''CDC_REPLICA_USER'') }}'
+    REPLICA_PASSWORD: '{{ secret(''CDC_REPLICA_PASSWORD'') }}'
+    MAX_ROWS: '{{ inputs.max_rows }}'
+    MAX_EXAMPLES: '{{ inputs.max_examples }}'
+    ALLOW_EMPTY: '{{ inputs.allow_empty }}'
+  outputFiles:
+  - cdc-parity-report.json
+  timeout: PT20M
+  script: "import json\nimport os\nimport time\nfrom pathlib import Path\n\nimport\
+    \ psycopg\nfrom kestra import Kestra\n\nFIELDS = (\"email\", \"full_name\", \"\
+    plan\", \"notes\", \"updated_at\")\nSOURCE_SQL = \"\"\"SELECT id, email, full_name,\
+    \ plan, notes, updated_at\n                FROM public.customers ORDER BY id\"\
+    \"\"\nREPLICA_SQL = \"\"\"SELECT id, email, full_name, plan, notes, updated_at\n\
+    \                 FROM cdc.customers_live ORDER BY id\"\"\"\n\ndef connect(name):\n\
+    \    return psycopg.connect(\n        os.environ[name + \"_DSN\"],\n        user=os.environ[name\
+    \ + \"_USER\"],\n        password=os.environ[name + \"_PASSWORD\"],\n        connect_timeout=10,\n\
+    \        options=\"-c statement_timeout=900000\",\n    )\n\ndef rows(cursor):\n\
+    \    # Integer primary keys avoid cross-database text collation differences.\n\
+    \    previous = None\n    for row in cursor:\n        if len(row) != len(FIELDS)\
+    \ + 1 or type(row[0]) is not int:\n            raise ValueError(\"expected an\
+    \ integer primary key and six columns\")\n        if previous is not None and\
+    \ row[0] <= previous:\n            raise ValueError(\"keys must be unique and\
+    \ strictly increasing\")\n        previous = row[0]\n        yield row\n\ndef\
+    \ compare(source, target, max_rows, max_examples):\n    left, right = iter(source),\
+    \ iter(target)\n    a, b = next(left, None), next(right, None)\n    counts = dict(source_rows=0,\
+    \ replica_rows=0, matched=0,\n                  missing=0, extra=0, changed=0)\n\
+    \    samples = []\n    while a is not None or b is not None:\n        if a is\
+    \ not None and (b is None or a[0] < b[0]):\n            counts[\"source_rows\"\
+    ] += 1\n            counts[\"missing\"] += 1\n            item = {\"id\": a[0],\
+    \ \"kind\": \"MISSING_IN_REPLICA\"}\n            a = next(left, None)\n      \
+    \  elif b is not None and (a is None or b[0] < a[0]):\n            counts[\"replica_rows\"\
+    ] += 1\n            counts[\"extra\"] += 1\n            item = {\"id\": b[0],\
+    \ \"kind\": \"EXTRA_IN_REPLICA\"}\n            b = next(right, None)\n       \
+    \ else:\n            counts[\"source_rows\"] += 1\n            counts[\"replica_rows\"\
+    ] += 1\n            unequal = [field for index, field in enumerate(FIELDS, 1)\n\
+    \                       if a[index] != b[index]]\n            if unequal:\n  \
+    \              counts[\"changed\"] += 1\n                item = {\"id\": a[0],\
+    \ \"kind\": \"CHANGED\", \"fields\": unequal}\n            else:\n           \
+    \     counts[\"matched\"] += 1\n                item = None\n            a, b\
+    \ = next(left, None), next(right, None)\n        if item and len(samples) < max_examples:\n\
+    \            samples.append(item)\n        if max(counts[\"source_rows\"], counts[\"\
+    replica_rows\"]) > max_rows:\n            raise ValueError(\"row limit reached\
+    \ during comparison\")\n    return counts, samples\n\nstarted = time.monotonic()\n\
+    limit = int(os.environ[\"MAX_ROWS\"])\nsample_limit = int(os.environ[\"MAX_EXAMPLES\"\
+    ])\nallow_empty = os.environ[\"ALLOW_EMPTY\"].lower() == \"true\"\nif not 1 <=\
+    \ limit <= 50000000 or not 1 <= sample_limit <= 100:\n    raise ValueError(\"\
+    invalid scan limit\")\n\n# Both sessions are read-only. Run only after writes\
+    \ stop and CDC catches up:\n# separate PostgreSQL databases cannot share one atomic\
+    \ MVCC snapshot.\nwith connect(\"SOURCE\") as source, connect(\"REPLICA\") as\
+    \ replica:\n    source.execute(\"SET TRANSACTION ISOLATION LEVEL REPEATABLE READ\
+    \ READ ONLY\")\n    replica.execute(\"SET TRANSACTION ISOLATION LEVEL REPEATABLE\
+    \ READ READ ONLY\")\n    identity_sql = \"SELECT inet_server_addr()::text, inet_server_port(),\
+    \ current_database()\"\n    if source.execute(identity_sql).fetchone() == replica.execute(identity_sql).fetchone():\n\
+    \        raise ValueError(\"source and replica must be separate databases\")\n\
+    \    # Recheck metadata inside the snapshot used by the row scan, including tombstones.\n\
+    \    invalid = replica.execute(\"\"\"SELECT EXISTS (\n        SELECT 1 FROM cdc.customers\n\
+    \        WHERE _cdc_lsn IS NULL OR _cdc_lsn < 0 OR _cdc_deleted IS NULL\n    )\"\
+    \"\").fetchone()[0]\n    if invalid:\n        raise ValueError(\"invalid replica\
+    \ CDC metadata\")\n    with source.cursor(name=\"parity_source\") as sc, replica.cursor(name=\"\
+    parity_replica\") as rc:\n        sc.itersize = 1000\n        rc.itersize = 1000\n\
+    \        sc.execute(SOURCE_SQL)\n        rc.execute(REPLICA_SQL)\n        counts,\
+    \ examples = compare(rows(sc), rows(rc), limit, sample_limit)\n\ndifference_count\
+    \ = counts[\"missing\"] + counts[\"extra\"] + counts[\"changed\"]\nempty_not_allowed\
+    \ = not allow_empty and counts[\"source_rows\"] == counts[\"replica_rows\"] ==\
+    \ 0\nreport = {\n    \"status\": \"PASS\" if difference_count == 0 and not empty_not_allowed\
+    \ else \"BLOCK\",\n    \"reason\": \"EMPTY_DATASET\" if empty_not_allowed else\n\
+    \              (\"ROW_DIFFERENCES\" if difference_count else \"PARITY_VERIFIED\"\
+    ),\n    **counts,\n    \"difference_count\": difference_count,\n    \"examples\"\
+    : examples,\n    \"examples_truncated\": difference_count > len(examples),\n \
+    \   \"duration_seconds\": round(time.monotonic() - started, 3),\n    \"caveat\"\
+    : \"Two database snapshots are not atomic. Quiesce source writes and drain CDC\
+    \ first.\",\n}\nPath(\"cdc-parity-report.json\").write_text(json.dumps(report,\
+    \ indent=2, sort_keys=True) + \"\\n\")\nKestra.outputs({key: report[key] for key\
+    \ in\n                (\"status\", \"reason\", \"source_rows\", \"replica_rows\"\
+    , \"difference_count\")})\nprint(\"CDC audit:\", report[\"status\"], \"differences:\"\
+    , difference_count)\n"
+- id: enforce_parity
+  type: io.kestra.plugin.core.flow.If
+  description: Stop a cutover when the full row comparison finds any difference.
+  condition: '{{ outputs.compare_rows.vars.status != ''PASS'' }}'
+  then:
+  - id: block_cutover
+    type: io.kestra.plugin.core.execution.Fail
+    errorMessage: 'CDC parity failed: {{ outputs.compare_rows.vars.reason }}. source={{
+      outputs.compare_rows.vars.source_rows }}, replica={{ outputs.compare_rows.vars.replica_rows
+      }}, differences={{ outputs.compare_rows.vars.difference_count }}. See the cdc-parity-report.json
+      output of compare_rows.'
+  else:
+  - id: parity_confirmed
+    type: io.kestra.plugin.core.log.Log
+    message: CDC row comparison passed for {{ outputs.compare_rows.vars.source_rows
+      }} rows. Source writes must stay stopped until the cutover is complete.

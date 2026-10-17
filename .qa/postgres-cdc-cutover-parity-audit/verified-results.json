@@ -1,0 +1,333 @@
+{
+  "source_commit": "059ab9effa49bd1de20d817646abd58f7dea0000",
+  "yaml_sha256": "9e2eb05942279277383c909577fe6424e4f3584fca3302d862c25433fd120439",
+  "yaml_lf_sha256": "a51da0b6dfc9ff6c95aeebfb83d1dfffbeb78576ea0a956f0bd7921d1bc69c54",
+  "checkout_line_endings": "CRLF",
+  "embedded_python_sha256": "5e81f32ccbba0466ca89e51a27fbca5a90d638c2eeb04bf8ec828c61f872f93f",
+  "runtime_cases": 18,
+  "offline_test_methods": 15,
+  "randomized_cases": 500,
+  "results": [
+    {
+      "case": "unconfirmed-cutover",
+      "execution_id": "5LjdEDWyPbc6d55nTR9jGF",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "stop_unconfirmed_cutover"
+    },
+    {
+      "case": "equal",
+      "execution_id": "7l9PKCLfTEEpSzu5LY0HvC",
+      "state": "SUCCESS",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.034,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 12,
+        "missing": 0,
+        "reason": "PARITY_VERIFIED",
+        "replica_rows": 12,
+        "source_rows": 12,
+        "status": "PASS"
+      },
+      "failed_task": null
+    },
+    {
+      "case": "missing",
+      "execution_id": "7LqN9NuRwsZhX7ngsghDi2",
+      "state": "FAILED",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 1,
+        "duration_seconds": 0.069,
+        "examples": [
+          {
+            "id": 3,
+            "kind": "MISSING_IN_REPLICA"
+          }
+        ],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 11,
+        "missing": 1,
+        "reason": "ROW_DIFFERENCES",
+        "replica_rows": 11,
+        "source_rows": 12,
+        "status": "BLOCK"
+      },
+      "failed_task": "block_cutover"
+    },
+    {
+      "case": "extra",
+      "execution_id": "vd1jPkLtyE3sz4O3gYhtM",
+      "state": "FAILED",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 1,
+        "duration_seconds": 0.042,
+        "examples": [
+          {
+            "id": 999,
+            "kind": "EXTRA_IN_REPLICA"
+          }
+        ],
+        "examples_truncated": false,
+        "extra": 1,
+        "matched": 12,
+        "missing": 0,
+        "reason": "ROW_DIFFERENCES",
+        "replica_rows": 13,
+        "source_rows": 12,
+        "status": "BLOCK"
+      },
+      "failed_task": "block_cutover"
+    },
+    {
+      "case": "changed",
+      "execution_id": "3HX0gIMhmnYBmCZjddN6v",
+      "state": "FAILED",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 1,
+        "difference_count": 1,
+        "duration_seconds": 0.086,
+        "examples": [
+          {
+            "fields": [
+              "email",
+              "notes"
+            ],
+            "id": 4,
+            "kind": "CHANGED"
+          }
+        ],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 11,
+        "missing": 0,
+        "reason": "ROW_DIFFERENCES",
+        "replica_rows": 12,
+        "source_rows": 12,
+        "status": "BLOCK"
+      },
+      "failed_task": "block_cutover"
+    },
+    {
+      "case": "tombstone",
+      "execution_id": "1JVOTHfZ6R8YJRF6glPmGI",
+      "state": "SUCCESS",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.034,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 12,
+        "missing": 0,
+        "reason": "PARITY_VERIFIED",
+        "replica_rows": 12,
+        "source_rows": 12,
+        "status": "PASS"
+      },
+      "failed_task": null
+    },
+    {
+      "case": "empty-block",
+      "execution_id": "63CLDs51FYCustqjvbkbyx",
+      "state": "FAILED",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.031,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 0,
+        "missing": 0,
+        "reason": "EMPTY_DATASET",
+        "replica_rows": 0,
+        "source_rows": 0,
+        "status": "BLOCK"
+      },
+      "failed_task": "block_cutover"
+    },
+    {
+      "case": "empty-allowed",
+      "execution_id": "4FX2t8wnfc2D2IglhsRnDK",
+      "state": "SUCCESS",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.034,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 0,
+        "missing": 0,
+        "reason": "PARITY_VERIFIED",
+        "replica_rows": 0,
+        "source_rows": 0,
+        "status": "PASS"
+      },
+      "failed_task": null
+    },
+    {
+      "case": "invalid-metadata",
+      "execution_id": "1a96KPZFcPNnSPuA2ZPYTI",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "stop_unsafe_scan"
+    },
+    {
+      "case": "row-limit",
+      "execution_id": "4hVikSnvxVSH40dF5mkgn4",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "stop_unsafe_scan"
+    },
+    {
+      "case": "invalid-limit",
+      "execution_id": "1y8KBLJLp0DmSJTM5Fdnh0",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "stop_unconfirmed_cutover"
+    },
+    {
+      "case": "bounded-report",
+      "execution_id": "N43dhRNrTl3ntRaMvK4On",
+      "state": "FAILED",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 10000,
+        "difference_count": 10000,
+        "duration_seconds": 0.312,
+        "examples": [
+          {
+            "fields": [
+              "full_name"
+            ],
+            "id": 1,
+            "kind": "CHANGED"
+          },
+          {
+            "fields": [
+              "full_name"
+            ],
+            "id": 2,
+            "kind": "CHANGED"
+          },
+          {
+            "fields": [
+              "full_name"
+            ],
+            "id": 3,
+            "kind": "CHANGED"
+          }
+        ],
+        "examples_truncated": true,
+        "extra": 0,
+        "matched": 0,
+        "missing": 0,
+        "reason": "ROW_DIFFERENCES",
+        "replica_rows": 10000,
+        "source_rows": 10000,
+        "status": "BLOCK"
+      },
+      "failed_task": "block_cutover"
+    },
+    {
+      "case": "duplicate-view-keys",
+      "execution_id": "2JaEePvqHsnK04gY9SiDb0",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "compare_rows"
+    },
+    {
+      "case": "permission-denied",
+      "execution_id": "353x6Na5cyQeEBIFWJO6jd",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "compare_rows"
+    },
+    {
+      "case": "recovered",
+      "execution_id": "1Lb5bDHTbstibwwQTauEv",
+      "state": "SUCCESS",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.024,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 12,
+        "missing": 0,
+        "reason": "PARITY_VERIFIED",
+        "replica_rows": 12,
+        "source_rows": 12,
+        "status": "PASS"
+      },
+      "failed_task": null
+    },
+    {
+      "case": "same-database",
+      "execution_id": "3trTyuIz1YMrF95ct6NWMj",
+      "state": "FAILED",
+      "report": null,
+      "failed_task": "compare_rows"
+    },
+    {
+      "case": "debezium-snapshot",
+      "execution_id": "1nF7ufKSKjHWOeVgkvHKaH",
+      "state": "SUCCESS",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.023,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 12,
+        "missing": 0,
+        "reason": "PARITY_VERIFIED",
+        "replica_rows": 12,
+        "source_rows": 12,
+        "status": "PASS"
+      },
+      "failed_task": null
+    },
+    {
+      "case": "debezium-mixed-dml",
+      "execution_id": "Jl58liV6OCzpMGkjNIO7r",
+      "state": "SUCCESS",
+      "report": {
+        "caveat": "Two database snapshots are not atomic. Quiesce source writes and drain CDC first.",
+        "changed": 0,
+        "difference_count": 0,
+        "duration_seconds": 0.019,
+        "examples": [],
+        "examples_truncated": false,
+        "extra": 0,
+        "matched": 12,
+        "missing": 0,
+        "reason": "PARITY_VERIFIED",
+        "replica_rows": 12,
+        "source_rows": 12,
+        "status": "PASS"
+      },
+      "failed_task": null
+    }
+  ]
+}

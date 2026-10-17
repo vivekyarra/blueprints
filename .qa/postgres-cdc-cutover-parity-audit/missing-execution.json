@@ -1,0 +1,410 @@
+{
+  "tenantId": "main",
+  "id": "7LqN9NuRwsZhX7ngsghDi2",
+  "namespace": "company.team",
+  "flowId": "postgres-cdc-cutover-parity-audit",
+  "flowRevision": 1,
+  "taskRunList": [
+    {
+      "id": "1mGC6Xxjv2ZViRW4ipiew3",
+      "taskId": "validate_cutover_window",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:17.457914Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:17.457915Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T12:38:17.493274Z"
+              }
+            ],
+            "duration": "PT0.03536S",
+            "endDate": "2026-10-17T12:38:17.493274Z",
+            "startDate": "2026-10-17T12:38:17.457914Z"
+          }
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:17.453819Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:17.457924Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T12:38:17.491840Z"
+          }
+        ],
+        "duration": "PT0.038021S",
+        "endDate": "2026-10-17T12:38:17.491840Z",
+        "startDate": "2026-10-17T12:38:17.453819Z"
+      }
+    },
+    {
+      "id": "OWR4TR68X3hizyWDGt5Ue",
+      "taskId": "source_inventory",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:17.549589Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:17.549592Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T12:38:17.615161Z"
+              }
+            ],
+            "duration": "PT0.065572S",
+            "endDate": "2026-10-17T12:38:17.615161Z",
+            "startDate": "2026-10-17T12:38:17.549589Z"
+          },
+          "workerId": "19NCk4Xbt7j613gE8dJG0G"
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:17.501477Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T12:38:17.503200Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:17.549022Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T12:38:17.615477Z"
+          }
+        ],
+        "duration": "PT0.114S",
+        "endDate": "2026-10-17T12:38:17.615477Z",
+        "startDate": "2026-10-17T12:38:17.501477Z"
+      }
+    },
+    {
+      "id": "10qS3x8NqlZijH8muXUaAY",
+      "taskId": "replica_inventory",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:17.680855Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:17.680858Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T12:38:17.702426Z"
+              }
+            ],
+            "duration": "PT0.021571S",
+            "endDate": "2026-10-17T12:38:17.702426Z",
+            "startDate": "2026-10-17T12:38:17.680855Z"
+          },
+          "workerId": "19NCk4Xbt7j613gE8dJG0G"
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:17.659225Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T12:38:17.661008Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:17.680355Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T12:38:17.702651Z"
+          }
+        ],
+        "duration": "PT0.043426S",
+        "endDate": "2026-10-17T12:38:17.702651Z",
+        "startDate": "2026-10-17T12:38:17.659225Z"
+      }
+    },
+    {
+      "id": "1IFRfN0vaPAkbOjSbcOjzY",
+      "taskId": "check_inventory",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:17.733224Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:17.733227Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T12:38:17.738267Z"
+              }
+            ],
+            "duration": "PT0.005043S",
+            "endDate": "2026-10-17T12:38:17.738267Z",
+            "startDate": "2026-10-17T12:38:17.733224Z"
+          }
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:17.729372Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:17.733231Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T12:38:17.737534Z"
+          }
+        ],
+        "duration": "PT0.008162S",
+        "endDate": "2026-10-17T12:38:17.737534Z",
+        "startDate": "2026-10-17T12:38:17.729372Z"
+      }
+    },
+    {
+      "id": "7CP6gghV4ZUu07M9Kgv1lc",
+      "taskId": "compare_rows",
+      "attempts": [
+        {
+          "state": {
+            "current": "SUCCESS",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:17.765130Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:17.765134Z"
+              },
+              {
+                "state": "SUCCESS",
+                "date": "2026-10-17T12:38:41.459771Z"
+              }
+            ],
+            "duration": "PT23.694641S",
+            "endDate": "2026-10-17T12:38:41.459771Z",
+            "startDate": "2026-10-17T12:38:17.765130Z"
+          },
+          "workerId": "19NCk4Xbt7j613gE8dJG0G"
+        }
+      ],
+      "state": {
+        "current": "SUCCESS",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:17.744119Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T12:38:17.747456Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:17.764663Z"
+          },
+          {
+            "state": "SUCCESS",
+            "date": "2026-10-17T12:38:41.461367Z"
+          }
+        ],
+        "duration": "PT23.717248S",
+        "endDate": "2026-10-17T12:38:41.461367Z",
+        "startDate": "2026-10-17T12:38:17.744119Z"
+      }
+    },
+    {
+      "id": "3BXSbZQGAqUM96ndt8l0CX",
+      "taskId": "enforce_parity",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:41.664371Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:41.664375Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T12:38:41.871424Z"
+              }
+            ],
+            "duration": "PT0.207053S",
+            "endDate": "2026-10-17T12:38:41.871424Z",
+            "startDate": "2026-10-17T12:38:41.664371Z"
+          }
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:41.641370Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:41.664382Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T12:38:41.869669Z"
+          }
+        ],
+        "duration": "PT0.228299S",
+        "endDate": "2026-10-17T12:38:41.869669Z",
+        "startDate": "2026-10-17T12:38:41.641370Z"
+      }
+    },
+    {
+      "id": "6QQvdL6fjk3XP2EDmJ746Y",
+      "taskId": "block_cutover",
+      "parentTaskRunId": "3BXSbZQGAqUM96ndt8l0CX",
+      "attempts": [
+        {
+          "state": {
+            "current": "FAILED",
+            "histories": [
+              {
+                "state": "CREATED",
+                "date": "2026-10-17T12:38:41.787046Z"
+              },
+              {
+                "state": "RUNNING",
+                "date": "2026-10-17T12:38:41.787049Z"
+              },
+              {
+                "state": "FAILED",
+                "date": "2026-10-17T12:38:41.809052Z"
+              }
+            ],
+            "duration": "PT0.022006S",
+            "endDate": "2026-10-17T12:38:41.809052Z",
+            "startDate": "2026-10-17T12:38:41.787046Z"
+          },
+          "workerId": "19NCk4Xbt7j613gE8dJG0G"
+        }
+      ],
+      "state": {
+        "current": "FAILED",
+        "histories": [
+          {
+            "state": "CREATED",
+            "date": "2026-10-17T12:38:41.684186Z"
+          },
+          {
+            "state": "SUBMITTED",
+            "date": "2026-10-17T12:38:41.706206Z"
+          },
+          {
+            "state": "RUNNING",
+            "date": "2026-10-17T12:38:41.786344Z"
+          },
+          {
+            "state": "FAILED",
+            "date": "2026-10-17T12:38:41.809156Z"
+          }
+        ],
+        "duration": "PT0.12497S",
+        "endDate": "2026-10-17T12:38:41.809156Z",
+        "startDate": "2026-10-17T12:38:41.684186Z"
+      }
+    }
+  ],
+  "inputs": {
+    "cutover_ready": true,
+    "max_rows": 5000000,
+    "max_examples": 20,
+    "allow_empty": false
+  },
+  "labels": [
+    {
+      "key": "system.from",
+      "value": "api"
+    },
+    {
+      "key": "system.correlationId",
+      "value": "7LqN9NuRwsZhX7ngsghDi2"
+    }
+  ],
+  "state": {
+    "current": "FAILED",
+    "histories": [
+      {
+        "state": "CREATED",
+        "date": "2026-10-17T12:38:17.450907Z"
+      },
+      {
+        "state": "RUNNING",
+        "date": "2026-10-17T12:38:17.457846Z"
+      },
+      {
+        "state": "FAILED",
+        "date": "2026-10-17T12:38:41.894049Z"
+      }
+    ],
+    "duration": "PT24.443142S",
+    "endDate": "2026-10-17T12:38:41.894049Z",
+    "startDate": "2026-10-17T12:38:17.450907Z"
+  },
+  "originalId": "7LqN9NuRwsZhX7ngsghDi2",
+  "metadata": {
+    "attemptNumber": 1,
+    "originalCreatedDate": "2026-10-17T12:38:17.450913Z",
+    "concurrencyScopes": [
+      "main|company.team|postgres-cdc-cutover-parity-audit"
+    ]
+  }
+}
