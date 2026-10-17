@@ -1,0 +1,9 @@
+🔍 Validating blueprint tags...
+Allowed tags: Data, Infrastructure, Business, Cloud, Core, AI, Getting Started, System
+
+📄 Checking: flows/csv-postgres-parallel-snapshot.yaml
+  valid
+📄 Checking: flows/kafka-compacted-postgres-state.yaml
+  valid
+
+✅ All blueprint tags are valid!
