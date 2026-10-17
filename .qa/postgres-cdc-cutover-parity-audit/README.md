@@ -70,6 +70,7 @@ python "$qa/run_cdc.py"
 python "$qa/capture_cdc_evidence.py"
 python "$qa/verify_readonly.py"
 python "$qa/record_verified.py"
+docker run --rm -v "${PWD}:/repo:ro" -v "${PWD}/${qa}:/qa" -w /repo python:3.12-slim bash /qa/run-tags-ci.sh
 ```
 
 The bootstrap generates local `runtime.env` and `application.yaml` files. Their
